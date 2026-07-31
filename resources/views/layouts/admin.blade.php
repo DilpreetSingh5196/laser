@@ -38,6 +38,11 @@
             padding: 15px 0;
             flex-grow: 1;
             overflow-y: auto;
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none;  /* IE and Edge */
+        }
+        .sidebar-nav::-webkit-scrollbar {
+            display: none; /* Chrome, Safari and Opera */
         }
         .nav-item {
             padding: 5px 15px;

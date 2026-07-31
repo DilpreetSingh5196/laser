@@ -33,7 +33,7 @@
                         @foreach($order->items as $index => $item)
                             @if($item->item_image)
                                 <div class="text-center" style="width: 40px;">
-                                    <img src="{{ asset($item->item_image) }}" alt="Item" style="width: 35px; height: 35px; object-fit: cover; border-radius: 3px;">
+                                    <img src="{{ asset($item->item_image) }}" alt="Item" style="width: 35px; height: 35px; object-fit: cover; border-radius: 3px; cursor: pointer;" data-bs-toggle="modal" data-bs-target="#imageModal{{ $item->id }}">
                                     <div class="text-muted" style="font-size: 0.65rem;">#{{ $index + 1 }}</div>
                                 </div>
                             @else
@@ -96,7 +96,7 @@
                     @foreach($order->items as $index => $item)
                         @if($item->item_image)
                             <div class="text-center">
-                                <img src="{{ asset($item->item_image) }}" alt="Item" width="45" height="45" style="object-fit: cover; border-radius: 4px;">
+                                <img src="{{ asset($item->item_image) }}" alt="Item" width="45" height="45" style="object-fit: cover; border-radius: 4px; cursor: pointer;" data-bs-toggle="modal" data-bs-target="#imageModal{{ $item->id }}">
                                 <div class="text-muted" style="font-size: 0.65rem;">#{{ $index + 1 }}</div>
                             </div>
                         @else
@@ -139,4 +139,25 @@
 </div>
 
 {{ $orders->links('pagination::bootstrap-5') }}
+
+@foreach($orders as $order)
+    @foreach($order->items as $index => $item)
+        @if($item->item_image)
+            <div class="modal fade" id="imageModal{{ $item->id }}" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Item #{{ $index + 1 }} Image (Order #{{ $order->id }})</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body text-center">
+                            <img src="{{ asset($item->item_image) }}" class="img-fluid" alt="Item">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endif
+    @endforeach
+@endforeach
+
 @endsection

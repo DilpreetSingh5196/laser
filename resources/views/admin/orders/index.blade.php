@@ -29,13 +29,31 @@
                 <td>{{ $order->id }}</td>
                 <td>{{ $order->client->client_name }} <br><small class="text-muted">{{ $order->client->firm_name }}</small></td>
                 <td>
-                    @if($order->item_image)
-                        <img src="{{ asset('storage/' . $order->item_image) }}" alt="Item" width="50">
-                    @else
-                        N/A
-                    @endif
+                    <div class="d-flex flex-wrap gap-1">
+                        @foreach($order->items as $index => $item)
+                            @if($item->item_image)
+                                <div class="text-center" style="width: 40px;">
+                                    <img src="{{ asset($item->item_image) }}" alt="Item" style="width: 35px; height: 35px; object-fit: cover; border-radius: 3px;">
+                                    <div class="text-muted" style="font-size: 0.65rem;">#{{ $index + 1 }}</div>
+                                </div>
+                            @else
+                                <div class="text-center" style="width: 40px;">
+                                    <div class="bg-light d-flex align-items-center justify-content-center" style="width: 35px; height: 35px; border-radius: 3px;">
+                                        <small class="text-muted" style="font-size: 0.65rem;">N/A</small>
+                                    </div>
+                                    <div class="text-muted" style="font-size: 0.65rem;">#{{ $index + 1 }}</div>
+                                </div>
+                            @endif
+                        @endforeach
+                    </div>
                 </td>
-                <td>{{ $order->quantity }}</td>
+                <td>
+                    <ul class="list-unstyled mb-0" style="font-size: 0.8rem;">
+                        @foreach($order->items as $index => $item)
+                            <li><strong>#{{ $index + 1 }}:</strong> {{ $item->quantity }}</li>
+                        @endforeach
+                    </ul>
+                </td>
                 <td>{{ $order->price ? 'Rs. ' . $order->price : 'N/A' }}</td>
                 <td>
                     <span class="badge {{ $order->status == 'Pending' ? 'bg-warning text-dark' : 'bg-info text-dark' }}">{{ $order->status }}</span>

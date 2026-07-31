@@ -30,15 +30,25 @@ class OrderController extends Controller
     public function assignPrice(Request $request, Order $order)
     {
         $request->validate([
-            'price' => 'required|numeric|min:0'
+            'prices' => 'required|array',
+            'prices.*' => 'required|numeric|min:0'
         ]);
 
+        $totalPrice = 0;
+        foreach ($request->prices as $itemId => $price) {
+            $item = $order->items()->find($itemId);
+            if ($item) {
+                $item->update(['price' => $price]);
+                $totalPrice += $price;
+            }
+        }
+
         $order->update([
-            'price' => $request->price,
+            'price' => $totalPrice,
             'status' => 'Price Assigned'
         ]);
 
-        return redirect()->route('admin.orders.index')->with('success', 'Price assigned successfully.');
+        return redirect()->route('admin.orders.index')->with('success', 'Prices assigned successfully.');
     }
 
     public function bill(Order $order)

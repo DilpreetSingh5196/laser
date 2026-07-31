@@ -24,28 +24,46 @@
             <tr>
                 <td>{{ $order->id }}</td>
                 <td>
-                    @if($order->item_image)
-                        <img src="{{ asset('storage/' . $order->item_image) }}" alt="Item" width="50" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#imageModal{{ $order->id }}">
-                        
-                        <!-- Image Modal -->
-                        <div class="modal fade" id="imageModal{{ $order->id }}" tabindex="-1" aria-hidden="true">
-                          <div class="modal-dialog modal-lg">
-                            <div class="modal-content">
-                              <div class="modal-header">
-                                <h5 class="modal-title">Item Image</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                              </div>
-                              <div class="modal-body text-center">
-                                <img src="{{ asset('storage/' . $order->item_image) }}" class="img-fluid" alt="Item">
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                    @else
-                        N/A
-                    @endif
+                    <div class="d-flex flex-wrap gap-2">
+                        @foreach($order->items as $index => $item)
+                            @if($item->item_image)
+                                <div class="text-center">
+                                    <img src="{{ asset($item->item_image) }}" alt="Item {{ $index + 1 }}" width="45" height="45" style="cursor: pointer; object-fit: cover; border-radius: 4px;" data-bs-toggle="modal" data-bs-target="#imageModal{{ $item->id }}">
+                                    <div class="text-muted" style="font-size: 0.7rem;">#{{ $index + 1 }}</div>
+                                </div>
+                                
+                                <!-- Image Modal -->
+                                <div class="modal fade" id="imageModal{{ $item->id }}" tabindex="-1" aria-hidden="true">
+                                  <div class="modal-dialog modal-lg">
+                                    <div class="modal-content">
+                                      <div class="modal-header">
+                                        <h5 class="modal-title">Item #{{ $index + 1 }} Image (Order #{{ $order->id }})</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                      </div>
+                                      <div class="modal-body text-center">
+                                        <img src="{{ asset($item->item_image) }}" class="img-fluid" alt="Item">
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                            @else
+                                <div class="text-center">
+                                    <div class="bg-light d-flex align-items-center justify-content-center" style="width: 45px; height: 45px; border-radius: 4px;">
+                                        <small class="text-muted">N/A</small>
+                                    </div>
+                                    <div class="text-muted" style="font-size: 0.7rem;">#{{ $index + 1 }}</div>
+                                </div>
+                            @endif
+                        @endforeach
+                    </div>
                 </td>
-                <td>{{ $order->quantity }}</td>
+                <td>
+                    <ul class="list-unstyled mb-0" style="font-size: 0.85rem;">
+                        @foreach($order->items as $index => $item)
+                            <li><strong>#{{ $index + 1 }}:</strong> {{ $item->quantity }}</li>
+                        @endforeach
+                    </ul>
+                </td>
                 <td><span class="badge bg-secondary">{{ $order->status }}</span></td>
                 <td>{{ $order->price ? 'Rs. ' . $order->price : 'Waiting for Admin' }}</td>
                 <td>

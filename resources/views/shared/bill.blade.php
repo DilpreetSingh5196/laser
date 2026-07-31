@@ -95,8 +95,10 @@
                 </td>
                 
                 <td>
-                    @if($loop->first)
-                        Rs. {{ number_format($order->price, 2) }}
+                    @if($item->price)
+                        Rs. {{ number_format($item->price, 2) }}
+                    @else
+                        N/A
                     @endif
                 </td>
             </tr>

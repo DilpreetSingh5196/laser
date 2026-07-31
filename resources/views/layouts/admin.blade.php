@@ -157,6 +157,11 @@
                     </a>
                 </div>
                 <div class="nav-item">
+                    <a href="{{ route('admin.reports.index') }}" class="nav-link {{ request()->routeIs('admin.reports.*') ? 'active' : '' }}">
+                        <i class="bi bi-file-earmark-bar-graph"></i> Reports
+                    </a>
+                </div>
+                <div class="nav-item">
                     <a class="nav-link {{ request()->routeIs('admin.payments.*') ? 'active' : '' }}" href="{{ route('admin.payments.index') }}">
                         <i class="bi bi-shield-check"></i> Payment Verification
                     </a>

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bill - Order #{{ $order->id }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f8f9fa; }
+        .invoice-box { max-width: 800px; margin: auto; padding: 30px; border: 1px solid #eee; box-shadow: 0 0 10px rgba(0, 0, 0, 0.15); font-size: 16px; line-height: 24px; font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; color: #555; background: #fff; margin-top: 50px; }
+        .invoice-box table { width: 100%; line-height: inherit; text-align: left; }
+        .invoice-box table td { padding: 5px; vertical-align: top; }
+        .invoice-box table tr td:nth-child(2) { text-align: right; }
+        .invoice-box table tr.top table td { padding-bottom: 20px; }
+        .invoice-box table tr.top table td.title { font-size: 35px; line-height: 45px; color: #333; font-weight: bold; }
+        .invoice-box table tr.information table td { padding-bottom: 40px; }
+        .invoice-box table tr.heading td { background: #eee; border-bottom: 1px solid #ddd; font-weight: bold; }
+        .invoice-box table tr.details td { padding-bottom: 20px; }
+        .invoice-box table tr.item td{ border-bottom: 1px solid #eee; }
+        .invoice-box table tr.item.last td { border-bottom: none; }
+        .invoice-box table tr.total td:nth-child(2) { border-top: 2px solid #eee; font-weight: bold; font-size: 1.2em; }
+        @media print {
+            .no-print { display: none; }
+            .invoice-box { box-shadow: none; border: none; margin-top: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container mb-3 mt-3 text-end no-print">
+        <button onclick="window.print()" class="btn btn-primary"><i class="bi bi-printer"></i> Print Bill</button>
+        <button onclick="window.close()" class="btn btn-secondary">Close</button>
+    </div>
+
+    <div class="invoice-box">
+        <table cellpadding="0" cellspacing="0">
+            <tr class="top">
+                <td colspan="2">
+                    <table>
+                        <tr>
+                            <td class="title">
+                                <span style="color: #0d4b80;">Jai Maa Durga</span>
+                            </td>
+                            
+                            <td>
+                                Invoice #: {{ $order->id }}<br>
+                                Created: {{ $order->created_at->format('M d, Y') }}<br>
+                                Status: <span style="color: green; font-weight: bold;">{{ $order->payment_status }}</span>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            
+            <tr class="information">
+                <td colspan="2">
+                    <table>
+                        <tr>
+                            <td>
+                                <strong>Billed To:</strong><br>
+                                {{ $order->client->firm_name }}<br>
+                                {{ $order->client->client_name }}<br>
+                                {{ $order->client->mobile_number }}<br>
+                                {{ $order->client->email }}
+                            </td>
+                            
+                            <td>
+                                <strong>Billed By:</strong><br>
+                                Jai Maa Durga Laser Cutter<br>
+                                Patiala, Punjab<br>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            
+            <tr class="heading">
+                <td>Item Description</td>
+                <td>Amount</td>
+            </tr>
+            
+            <tr class="item last">
+                <td>
+                    Laser Cutting Service<br>
+                    <small>Quantity: {{ $order->quantity }}</small><br>
+                    <small>Status: {{ $order->status }}</small>
+                </td>
+                
+                <td>Rs. {{ number_format($order->price, 2) }}</td>
+            </tr>
+            
+            <tr class="total">
+                <td></td>
+                <td>
+                   Total: Rs. {{ number_format($order->price, 2) }}
+                </td>
+            </tr>
+        </table>
+        
+        <div class="mt-5 text-center text-muted" style="font-size: 0.85em;">
+            <p>Thank you for your business!</p>
+            @if($order->payment_status == 'Approved')
+                <p class="text-success fw-bold">This bill has been paid and approved.</p>
+            @endif
+        </div>
+    </div>
+</body>
+</html>

@@ -40,4 +40,18 @@ class OrderController extends Controller
 
         return redirect()->route('admin.orders.index')->with('success', 'Price assigned successfully.');
     }
+
+    public function bill(Order $order)
+    {
+        $order->load('client');
+        return view('shared.bill', compact('order'));
+    }
+    public function destroy(Order $order)
+    {
+        if ($order->item_image && \Illuminate\Support\Facades\Storage::disk('public')->exists($order->item_image)) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($order->item_image);
+        }
+        $order->delete();
+        return redirect()->route('admin.orders.index')->with('success', 'Order deleted successfully.');
+    }
 }

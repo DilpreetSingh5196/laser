@@ -10,7 +10,7 @@ class PaymentController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Order::with('client')->whereIn('status', ['Payment Verification Pending', 'Paid', 'Payment Rejected']);
+        $query = Order::with('client')->whereIn('status', ['Payment Verification Pending', 'Approved', 'Payment Rejected']);
         
         if ($request->has('search')) {
             $query->whereHas('client', function($q) use ($request) {
@@ -30,8 +30,8 @@ class PaymentController extends Controller
         ]);
 
         if ($request->action == 'approve') {
-            $order->status = 'Paid';
-            $order->payment_status = 'Paid';
+            $order->status = 'Approved';
+            $order->payment_status = 'Approved';
         } else {
             $order->status = 'Payment Rejected';
             $order->payment_status = 'Rejected';

@@ -24,8 +24,10 @@
                 <p><strong>Order Date:</strong> {{ $order->created_at->format('Y-m-d H:i') }}</p>
                 @if($order->item_image)
                 <div class="mb-3">
-                    <strong>Item Image:</strong><br>
-                    <img src="{{ asset('storage/' . $order->item_image) }}" alt="Item" class="img-fluid img-thumbnail mt-2" style="max-height: 200px;">
+                    <strong>Item Image (Click to enlarge):</strong><br>
+                    <a href="{{ asset('storage/' . $order->item_image) }}" target="_blank">
+                        <img src="{{ asset('storage/' . $order->item_image) }}" alt="Item" class="img-fluid img-thumbnail mt-2" style="width: 300px; height: 300px; object-fit: cover;">
+                    </a>
                 </div>
                 @endif
             </div>
@@ -40,7 +42,7 @@
             @csrf
             @method('PUT')
             <div class="input-group">
-                <span class="input-group-text">$</span>
+                <span class="input-group-text">Rs.</span>
                 <input type="number" step="0.01" name="price" class="form-control" placeholder="Enter Price" value="{{ old('price', $order->price) }}" required>
                 <button type="submit" class="btn btn-primary">Approve / Assign Price</button>
             </div>

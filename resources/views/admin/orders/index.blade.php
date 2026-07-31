@@ -36,12 +36,22 @@
                     @endif
                 </td>
                 <td>{{ $order->quantity }}</td>
-                <td>{{ $order->price ? '$' . $order->price : 'N/A' }}</td>
+                <td>{{ $order->price ? 'Rs. ' . $order->price : 'N/A' }}</td>
                 <td>
                     <span class="badge {{ $order->status == 'Pending' ? 'bg-warning text-dark' : 'bg-info text-dark' }}">{{ $order->status }}</span>
                 </td>
                 <td>
-                    <a href="{{ route('admin.orders.show', $order) }}" class="btn btn-sm btn-primary">View</a>
+                    <div class="d-flex align-items-center">
+                        <a href="{{ route('admin.orders.show', $order) }}" class="btn btn-sm btn-primary me-1">View</a>
+                        @if($order->payment_status == 'Approved')
+                            <a href="{{ route('admin.orders.bill', $order) }}" target="_blank" class="btn btn-sm btn-info me-1">Bill</a>
+                        @endif
+                        <form action="{{ route('admin.orders.destroy', $order) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this order?');">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                        </form>
+                    </div>
                 </td>
             </tr>
             @empty

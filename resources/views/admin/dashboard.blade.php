@@ -1,7 +1,8 @@
 @extends('layouts.admin')
 
+@section('page_title', 'Admin Dashboard Overview')
+
 @section('content')
-<h2 class="mb-4">Admin Dashboard</h2>
 <div class="row mb-4">
     <div class="col-md-4 mb-3">
         <div class="card bg-primary text-white text-center">
@@ -80,7 +81,7 @@
                     @endif
                 </td>
                 <td>{{ $order->quantity }}</td>
-                <td>{{ $order->price ? '$' . $order->price : 'N/A' }}</td>
+                <td>{{ $order->price ? 'Rs. ' . $order->price : 'N/A' }}</td>
                 <td>{{ $order->status }}</td>
                 <td>{{ $order->payment_status }}</td>
             </tr>

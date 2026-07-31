@@ -26,12 +26,12 @@
             <tr>
                 <td>{{ $order->id }}</td>
                 <td>{{ $order->client->client_name }} <br><small class="text-muted">{{ $order->client->firm_name }}</small></td>
-                <td>{{ $order->price ? '$' . $order->price : 'N/A' }}</td>
+                <td>{{ $order->price ? 'Rs. ' . $order->price : 'N/A' }}</td>
                 <td>
                     @if($order->payment_status == 'Pending Verification')
                         <span class="badge bg-warning text-dark">Pending Verification</span>
-                    @elseif($order->payment_status == 'Paid')
-                        <span class="badge bg-success">Paid</span>
+                    @elseif($order->payment_status == 'Approved')
+                        <span class="badge bg-success">Approved</span>
                     @elseif($order->payment_status == 'Rejected')
                         <span class="badge bg-danger">Rejected</span>
                     @else
@@ -50,7 +50,10 @@
                         <button type="submit" name="action" value="reject" class="btn btn-sm btn-danger w-100">Reject</button>
                     </form>
                     @else
-                        <span class="text-muted">{{ $order->admin_remark ?? 'No remarks' }}</span>
+                        <span class="text-muted d-block mb-1">{{ $order->admin_remark ?? 'No remarks' }}</span>
+                        @if($order->payment_status == 'Approved')
+                            <a href="{{ route('admin.orders.bill', $order) }}" target="_blank" class="btn btn-sm btn-info w-100">View Bill</a>
+                        @endif
                     @endif
                 </td>
             </tr>

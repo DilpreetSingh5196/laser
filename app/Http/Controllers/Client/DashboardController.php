@@ -17,7 +17,7 @@ class DashboardController extends Controller
         $pendingOrders = Order::where('client_id', $clientId)->where('status', 'Pending')->count();
         $waitingForPriceOrders = Order::where('client_id', $clientId)->where('status', 'Pending')->count();
         $paymentPendingOrders = Order::where('client_id', $clientId)->where('status', 'Payment Verification Pending')->count();
-        $paidOrders = Order::where('client_id', $clientId)->where('status', 'Paid')->count();
+        $paidOrders = Order::where('client_id', $clientId)->where('status', 'Approved')->count();
         
         $recentOrders = Order::where('client_id', $clientId)->orderBy('id', 'desc')->take(10)->get();
         

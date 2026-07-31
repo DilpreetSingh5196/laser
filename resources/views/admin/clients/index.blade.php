@@ -13,7 +13,7 @@
     </div>
 </form>
 
-<div class="table-responsive">
+<div class="table-responsive d-none d-md-block">
     <table class="table table-bordered table-striped">
         <thead class="table-dark">
             <tr>
@@ -57,6 +57,40 @@
             @endforelse
         </tbody>
     </table>
+</div>
+
+<div class="d-block d-md-none">
+    @forelse($clients as $client)
+        <div class="card shadow-sm mb-3 border-0">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="card-title mb-0">{{ $client->client_name }}</h5>
+                    <span class="badge {{ $client->status ? 'bg-success' : 'bg-danger' }}">
+                        {{ $client->status ? 'Active' : 'Inactive' }}
+                    </span>
+                </div>
+                <div class="mb-2">
+                    <strong>Firm Name:</strong> {{ $client->firm_name }}
+                </div>
+                <div class="mb-2">
+                    <strong>Mobile:</strong> <a href="tel:{{ $client->mobile_number }}" class="text-decoration-none">{{ $client->mobile_number }}</a>
+                </div>
+                <div class="mb-3">
+                    <strong>Email:</strong> <a href="mailto:{{ $client->email }}" class="text-decoration-none">{{ $client->email }}</a>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="{{ route('admin.clients.edit', $client) }}" class="btn btn-warning flex-fill text-dark">Edit</a>
+                    <form action="{{ route('admin.clients.destroy', $client) }}" method="POST" class="flex-fill d-flex" onsubmit="return confirm('Are you sure?');">
+                        @csrf
+                        @method('DELETE')
+                        <button class="btn btn-danger w-100">Delete</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    @empty
+        <div class="alert alert-secondary text-center">No clients found.</div>
+    @endforelse
 </div>
 
 {{ $clients->links('pagination::bootstrap-5') }}

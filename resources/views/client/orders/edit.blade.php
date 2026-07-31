@@ -3,7 +3,7 @@
 @section('content')
 <div class="card mb-4">
     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-        <h4 class="mb-0">Edit Order #{{ $order->id }}</h4>
+        <h4 class="mb-0"><a href="{{ route('client.orders.index') }}" class="btn btn-sm btn-outline-light me-2"><i class="bi bi-arrow-left"></i> Back</a> Edit Order #{{ $order->id }}</h4>
     </div>
     <div class="card-body">
         <form action="{{ route('client.orders.update', $order) }}" method="POST" enctype="multipart/form-data" id="orderForm">

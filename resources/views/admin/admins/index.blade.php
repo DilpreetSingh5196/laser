@@ -13,7 +13,7 @@
     </div>
 </form>
 
-<div class="table-responsive">
+<div class="table-responsive d-none d-md-block">
     <table class="table table-bordered table-striped">
         <thead class="table-dark">
             <tr>
@@ -49,6 +49,37 @@
             @endforelse
         </tbody>
     </table>
+</div>
+
+<div class="d-block d-md-none">
+    @forelse($admins as $admin)
+        <div class="card shadow-sm mb-3 border-0">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="card-title mb-0">{{ $admin->name }}</h5>
+                    <span class="badge bg-secondary text-white">ID: {{ $admin->id }}</span>
+                </div>
+                <div class="mb-2">
+                    <strong>Email:</strong> <a href="mailto:{{ $admin->email }}" class="text-decoration-none">{{ $admin->email }}</a>
+                </div>
+                <div class="mb-3">
+                    <strong>Created:</strong> {{ $admin->created_at->format('Y-m-d H:i') }}
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="{{ route('admin.admins.edit', $admin) }}" class="btn btn-warning flex-fill text-dark">Edit</a>
+                    @if(auth()->guard('admin')->id() !== $admin->id)
+                    <form action="{{ route('admin.admins.destroy', $admin) }}" method="POST" class="flex-fill d-flex" onsubmit="return confirm('Are you sure?');">
+                        @csrf
+                        @method('DELETE')
+                        <button class="btn btn-danger w-100">Delete</button>
+                    </form>
+                    @endif
+                </div>
+            </div>
+        </div>
+    @empty
+        <div class="alert alert-secondary text-center">No admins found.</div>
+    @endforelse
 </div>
 
 {{ $admins->links('pagination::bootstrap-5') }}

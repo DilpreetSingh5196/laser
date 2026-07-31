@@ -10,7 +10,7 @@
     </div>
 </form>
 
-<div class="table-responsive">
+<div class="table-responsive d-none d-md-block">
     <table class="table table-bordered table-striped">
         <thead class="table-dark">
             <tr>
@@ -79,6 +79,63 @@
             @endforelse
         </tbody>
     </table>
+</div>
+
+<div class="d-block d-md-none">
+    @forelse($orders as $order)
+        <div class="card shadow-sm mb-3 border-0">
+            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                <strong>Order #{{ $order->id }}</strong>
+                <span class="badge {{ $order->status == 'Pending' ? 'bg-warning text-dark' : 'bg-info text-dark' }}">{{ $order->status }}</span>
+            </div>
+            <div class="card-body">
+                <div class="mb-2">
+                    <strong>Client:</strong> {{ $order->client->client_name }} <span class="text-muted small">({{ $order->client->firm_name }})</span>
+                </div>
+                <div class="mb-3 d-flex flex-wrap gap-2">
+                    @foreach($order->items as $index => $item)
+                        @if($item->item_image)
+                            <div class="text-center">
+                                <img src="{{ asset($item->item_image) }}" alt="Item" width="45" height="45" style="object-fit: cover; border-radius: 4px;">
+                                <div class="text-muted" style="font-size: 0.65rem;">#{{ $index + 1 }}</div>
+                            </div>
+                        @else
+                            <div class="text-center">
+                                <div class="bg-light d-flex align-items-center justify-content-center" style="width: 45px; height: 45px; border-radius: 4px;">
+                                    <small class="text-muted" style="font-size: 0.7rem;">N/A</small>
+                                </div>
+                                <div class="text-muted" style="font-size: 0.65rem;">#{{ $index + 1 }}</div>
+                            </div>
+                        @endif
+                    @endforeach
+                </div>
+                <div class="mb-2 text-muted small">
+                    <strong>Qty:</strong>
+                    @foreach($order->items as $index => $item)
+                        <span class="me-2">#{{$index+1}}: {{$item->quantity}}</span>
+                    @endforeach
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="fw-bold">Price:</span>
+                    <span>{{ $order->price ? 'Rs. ' . $order->price : 'N/A' }}</span>
+                </div>
+                
+                <div class="d-flex gap-2 mt-2">
+                    <a href="{{ route('admin.orders.show', $order) }}" class="btn btn-primary flex-fill">View</a>
+                    @if($order->payment_status == 'Approved')
+                        <a href="{{ route('admin.orders.bill', $order) }}" target="_blank" class="btn btn-info flex-fill text-white">Bill</a>
+                    @endif
+                    <form action="{{ route('admin.orders.destroy', $order) }}" method="POST" class="flex-fill d-flex" onsubmit="return confirm('Are you sure you want to delete this order?');">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-danger w-100">Delete</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    @empty
+        <div class="alert alert-secondary text-center">No orders found.</div>
+    @endforelse
 </div>
 
 {{ $orders->links('pagination::bootstrap-5') }}

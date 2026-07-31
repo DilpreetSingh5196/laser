@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Portal - Jai Maa Durga</title>
+    <title>Admin Portal - {{ \App\Models\Setting::get('company_name', 'Jai Maa Durga') }}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <style>
@@ -94,14 +94,43 @@
             padding: 25px;
             flex-grow: 1;
         }
+        @media (max-width: 768px) {
+            #sidebar {
+                position: fixed;
+                z-index: 1040;
+                height: 100vh;
+                left: -250px;
+                transition: left 0.3s ease;
+            }
+            #sidebar.show {
+                left: 0;
+            }
+            #overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                background: rgba(0,0,0,0.5);
+                z-index: 1030;
+            }
+            #overlay.show {
+                display: block;
+            }
+            .table-responsive {
+                border: 0;
+            }
+        }
     </style>
 </head>
 <body>
+    <div id="overlay"></div>
     <div id="wrapper">
         <!-- Sidebar -->
         <div id="sidebar">
             <div class="sidebar-brand">
-                Jai Maa Durga
+                {{ \App\Models\Setting::get('company_name', 'Jai Maa Durga') }}
             </div>
             <div class="sidebar-nav">
                 <div class="nav-item">
@@ -152,11 +181,19 @@
         <div id="content-wrapper">
             <!-- Topbar -->
             <div id="topbar">
-                <h1 class="topbar-title">@yield('page_title', 'Dashboard')</h1>
+                <div class="d-flex align-items-center">
+                    <button class="btn btn-outline-secondary d-md-none me-3" id="sidebarToggle" style="border:none; padding: 0;">
+                        <i class="bi bi-list fs-2 text-dark"></i>
+                    </button>
+                    <h1 class="topbar-title m-0">
+                        <span class="d-none d-md-inline">@yield('page_title', 'Admin Dashboard')</span>
+                        <span class="d-inline d-md-none">@yield('mobile_title', 'Admin')</span>
+                    </h1>
+                </div>
                 <div class="d-flex align-items-center">
                     <div class="dropdown">
                         <a class="text-dark text-decoration-none dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bi bi-person-circle fs-4 me-2"></i> {{ auth()->guard('admin')->user()->name }}
+                            <i class="bi bi-person-circle fs-4 me-2"></i> <span class="d-none d-md-inline">{{ auth()->guard('admin')->user()->name }}</span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end shadow-sm">
                             <li><a class="dropdown-item" href="{{ route('admin.profile.edit') }}"><i class="bi bi-person"></i> Profile</a></li>
@@ -223,6 +260,26 @@
                     }
                 });
             });
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.getElementById('sidebar');
+            const toggleBtn = document.getElementById('sidebarToggle');
+            const overlay = document.getElementById('overlay');
+
+            if(toggleBtn) {
+                toggleBtn.addEventListener('click', function() {
+                    sidebar.classList.toggle('show');
+                    overlay.classList.toggle('show');
+                });
+            }
+            if(overlay) {
+                overlay.addEventListener('click', function() {
+                    sidebar.classList.remove('show');
+                    overlay.classList.remove('show');
+                });
+            }
         });
     </script>
     @yield('scripts')

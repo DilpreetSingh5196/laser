@@ -1,7 +1,10 @@
 @extends('layouts.client')
 
 @section('content')
-<h2 class="mb-4">Client Profile</h2>
+<div class="d-flex align-items-center mb-4">
+    <a href="{{ route('client.dashboard') }}" class="btn btn-outline-secondary me-3"><i class="bi bi-arrow-left"></i> Back</a>
+    <h2 class="m-0">Client Profile</h2>
+</div>
 <div class="row">
     <div class="col-md-6 mb-4">
         <div class="card border-primary">

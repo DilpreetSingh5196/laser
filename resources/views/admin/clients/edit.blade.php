@@ -3,7 +3,7 @@
 @section('content')
 <div class="card mb-4">
     <div class="card-header bg-dark text-white">
-        <h4 class="mb-0">Edit Client</h4>
+        <h4 class="mb-0"><a href="{{ route('admin.clients.index') }}" class="btn btn-sm btn-outline-light me-2"><i class="bi bi-arrow-left"></i> Back</a> Edit Client</h4>
     </div>
     <div class="card-body">
         <form action="{{ route('admin.clients.update', $client) }}" method="POST">

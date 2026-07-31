@@ -6,7 +6,7 @@
     <a href="{{ route('client.orders.create') }}" class="btn btn-primary">Create Order</a>
 </div>
 
-<div class="table-responsive">
+<div class="table-responsive d-none d-md-block">
     <table class="table table-bordered table-striped">
         <thead class="table-primary">
             <tr>
@@ -155,6 +155,71 @@
             @endforelse
         </tbody>
     </table>
+</div>
+
+<div class="d-block d-md-none">
+    @forelse($orders as $order)
+        <div class="card shadow-sm mb-3 border-0">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <strong>Order #{{ $order->id }}</strong>
+                <span class="badge bg-light text-dark">{{ $order->status }}</span>
+            </div>
+            <div class="card-body">
+                <div class="mb-3 d-flex flex-wrap gap-2">
+                    @foreach($order->items as $index => $item)
+                        @if($item->item_image)
+                            <img src="{{ asset($item->item_image) }}" alt="Item" width="50" height="50" style="object-fit: cover; border-radius: 4px;" data-bs-toggle="modal" data-bs-target="#imageModal{{ $item->id }}">
+                        @else
+                            <div class="bg-light d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; border-radius: 4px;">
+                                <small class="text-muted">N/A</small>
+                            </div>
+                        @endif
+                    @endforeach
+                </div>
+                <div class="mb-2 text-muted small">
+                    <strong>Qty:</strong>
+                    @foreach($order->items as $index => $item)
+                        <span class="me-2">#{{$index+1}}: {{$item->quantity}}</span>
+                    @endforeach
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="fw-bold">Price:</span>
+                    <span>{{ $order->price ? 'Rs. ' . $order->price : 'Pending' }}</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="fw-bold">Payment:</span>
+                    <span class="badge {{ $order->payment_status == 'Approved' ? 'bg-success' : ($order->payment_status == 'Rejected' ? 'bg-danger' : 'bg-warning text-dark') }}">
+                        {{ $order->payment_status }}
+                    </span>
+                </div>
+                @if($order->admin_remark)
+                    <div class="alert alert-info py-1 px-2 small mb-3">Remark: {{ $order->admin_remark }}</div>
+                @endif
+                <div class="d-grid gap-2">
+                    @if($order->status == 'Price Assigned')
+                        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#payModal{{ $order->id }}">Pay Now</button>
+                    @elseif($order->payment_status == 'Approved')
+                        <a href="{{ route('client.orders.bill', $order) }}" target="_blank" class="btn btn-info text-white">View Bill</a>
+                    @else
+                        <button class="btn btn-secondary" disabled>Pay Now</button>
+                    @endif
+                    
+                    @if($order->status == 'Pending')
+                        <div class="d-flex gap-2 mt-2">
+                            <a href="{{ route('client.orders.edit', $order) }}" class="btn btn-warning flex-fill text-white"><i class="bi bi-pencil"></i> Edit</a>
+                            <form action="{{ route('client.orders.destroy', $order) }}" method="POST" class="flex-fill d-flex" onsubmit="return confirm('Are you sure you want to delete this order?');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger w-100"><i class="bi bi-trash"></i> Delete</button>
+                            </form>
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+    @empty
+        <div class="alert alert-secondary text-center">No orders found.</div>
+    @endforelse
 </div>
 
 {{ $orders->links('pagination::bootstrap-5') }}

@@ -38,7 +38,7 @@
                     <table>
                         <tr>
                             <td class="title">
-                                <span style="color: #0d4b80;">Jai Maa Durga</span>
+                                <span style="color: #0d4b80;">{{ \App\Models\Setting::get('company_name', 'Jai Maa Durga') }}</span>
                             </td>
                             
                             <td>
@@ -65,8 +65,15 @@
                             
                             <td>
                                 <strong>Billed By:</strong><br>
-                                Jai Maa Durga Laser Cutter<br>
-                                Patiala, Punjab<br>
+                                {{ \App\Models\Setting::get('company_name', 'Jai Maa Durga') }}<br>
+                                @if(\App\Models\Setting::get('company_address'))
+                                    {!! nl2br(e(\App\Models\Setting::get('company_address'))) !!}<br>
+                                @else
+                                    Patiala, Punjab<br>
+                                @endif
+                                @if(\App\Models\Setting::get('company_phones'))
+                                    Ph: {{ \App\Models\Setting::get('company_phones') }}<br>
+                                @endif
                             </td>
                         </tr>
                     </table>

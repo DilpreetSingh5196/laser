@@ -1,7 +1,10 @@
 @extends('layouts.admin')
 
 @section('content')
-<h2 class="mb-4">Order Details #{{ $order->id }}</h2>
+<div class="d-flex align-items-center mb-4">
+    <a href="{{ route('admin.orders.index') }}" class="btn btn-outline-secondary me-3"><i class="bi bi-arrow-left"></i> Back</a>
+    <h2 class="m-0">Order Details #{{ $order->id }}</h2>
+</div>
 <div class="row">
     <div class="col-md-6 mb-4">
         <div class="card">
@@ -57,11 +60,11 @@
                         @endif
                         
                         <hr>
-                        <div class="mt-3">
+                        <div class="mt-3 text-center">
                             <label class="form-label font-weight-bold">Assign Price for Item #{{ $index + 1 }}</label>
-                            <div class="input-group">
+                            <div class="input-group justify-content-center">
                                 <span class="input-group-text">Rs.</span>
-                                <input type="number" step="0.01" name="prices[{{ $item->id }}]" class="form-control" placeholder="Enter Price" value="{{ old('prices.' . $item->id, $item->price) }}" required>
+                                <input type="number" step="0.01" name="prices[{{ $item->id }}]" class="form-control" placeholder="Enter Price" value="{{ old('prices.' . $item->id, $item->price) }}" required style="max-width: 150px;">
                             </div>
                             @error('prices.' . $item->id)
                                 <div class="text-danger small mt-1">{{ $message }}</div>
@@ -74,8 +77,8 @@
     </div>
 
     <div class="card mb-4">
-        <div class="card-body text-end">
-            <h5 class="d-inline-block me-3">Grand Total will be automatically calculated.</h5>
+        <div class="card-body text-center">
+            <h5 class="d-block d-md-inline-block me-md-3 mb-3 mb-md-0">Grand Total will be automatically calculated.</h5>
             <button type="submit" class="btn btn-primary btn-lg">Approve & Assign All Prices</button>
         </div>
     </div>

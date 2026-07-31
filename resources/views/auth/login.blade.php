@@ -85,7 +85,7 @@
 
 <div class="login-card">
     <div class="login-header">
-        <h2>Jai Maa Durga</h2>
+        <h2>{{ \App\Models\Setting::get('company_name', 'Jai Maa Durga') }}</h2>
         <p>Sign in to your dashboard</p>
     </div>
     <div class="login-body">

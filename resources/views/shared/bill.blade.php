@@ -78,15 +78,29 @@
                 <td>Amount</td>
             </tr>
             
-            <tr class="item last">
+            @foreach($order->items as $index => $item)
+            <tr class="item {{ $loop->last ? 'last' : '' }}">
                 <td>
-                    Laser Cutting Service<br>
-                    <small>Quantity: {{ $order->quantity }}</small><br>
-                    <small>Status: {{ $order->status }}</small>
+                    <strong>Item #{{ $index + 1 }}</strong><br>
+                    <small>Quantity: {{ $item->quantity }}</small><br>
+                    @if($item->length_inch || $item->length_cm)
+                        <small>Length: {{ $item->length_inch ? $item->length_inch . ' Inch' : $item->length_cm . ' cm' }}</small><br>
+                    @endif
+                    @if($item->breadth_inch || $item->breadth_cm)
+                        <small>Breadth: {{ $item->breadth_inch ? $item->breadth_inch . ' Inch' : $item->breadth_cm . ' cm' }}</small><br>
+                    @endif
+                    @if($item->description)
+                        <small>Description: {{ $item->description }}</small><br>
+                    @endif
                 </td>
                 
-                <td>Rs. {{ number_format($order->price, 2) }}</td>
+                <td>
+                    @if($loop->first)
+                        Rs. {{ number_format($order->price, 2) }}
+                    @endif
+                </td>
             </tr>
+            @endforeach
             
             <tr class="total">
                 <td></td>

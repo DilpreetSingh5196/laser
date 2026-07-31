@@ -23,7 +23,7 @@ class OrderController extends Controller
 
     public function show(Order $order)
     {
-        $order->load('client');
+        $order->load(['client', 'items']);
         return view('admin.orders.show', compact('order'));
     }
 
@@ -43,13 +43,15 @@ class OrderController extends Controller
 
     public function bill(Order $order)
     {
-        $order->load('client');
+        $order->load(['client', 'items']);
         return view('shared.bill', compact('order'));
     }
     public function destroy(Order $order)
     {
-        if ($order->item_image && \Illuminate\Support\Facades\Storage::disk('public')->exists($order->item_image)) {
-            \Illuminate\Support\Facades\Storage::disk('public')->delete($order->item_image);
+        foreach ($order->items as $item) {
+            if ($item->item_image && file_exists(public_path($item->item_image))) {
+                unlink(public_path($item->item_image));
+            }
         }
         $order->delete();
         return redirect()->route('admin.orders.index')->with('success', 'Order deleted successfully.');

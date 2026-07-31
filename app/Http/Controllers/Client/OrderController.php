@@ -24,13 +24,33 @@ class OrderController extends Controller
     public function store(StoreOrderRequest $request)
     {
         $data = $request->validated();
-        $data['client_id'] = auth()->guard('client')->id();
+        $order = Order::create(['client_id' => auth()->guard('client')->id()]);
         
-        if ($request->hasFile('item_image')) {
-            $data['item_image'] = $request->file('item_image')->store('orders', 'public');
+        foreach ($data['items'] as $itemData) {
+            $item = [
+                'quantity' => $itemData['quantity'],
+                'description' => $itemData['description'] ?? null,
+            ];
+            
+            if (isset($itemData['unit'])) {
+                if ($itemData['unit'] == 'inch') {
+                    $item['length_inch'] = $itemData['length'] ?? null;
+                    $item['breadth_inch'] = $itemData['breadth'] ?? null;
+                } else {
+                    $item['length_cm'] = $itemData['length'] ?? null;
+                    $item['breadth_cm'] = $itemData['breadth'] ?? null;
+                }
+            }
+
+            if (isset($itemData['item_image']) && $itemData['item_image']) {
+                $imageName = time() . '_' . uniqid() . '.' . $itemData['item_image']->getClientOriginalExtension();
+                $itemData['item_image']->move(public_path('orders'), $imageName);
+                $item['item_image'] = 'orders/' . $imageName;
+            }
+
+            $order->items()->create($item);
         }
 
-        Order::create($data);
         return redirect()->route('client.orders.index')->with('success', 'Order created successfully.');
     }
 
@@ -39,6 +59,7 @@ class OrderController extends Controller
         if ($order->client_id != auth()->guard('client')->id()) {
             abort(403);
         }
+        $order->load('items');
         return view('client.orders.edit', compact('order'));
     }
 
@@ -48,20 +69,73 @@ class OrderController extends Controller
             abort(403);
         }
         $request->validate([
-            'quantity' => 'required|integer|min:1',
-            'item_image' => 'nullable|image|max:2048'
+            'items' => 'required|array|min:1',
+            'items.*.item_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
+            'items.*.quantity' => 'required|integer|min:1',
+            'items.*.length' => 'nullable|numeric|min:0',
+            'items.*.breadth' => 'nullable|numeric|min:0',
+            'items.*.unit' => 'required|in:inch,cm',
+            'items.*.description' => 'nullable|string',
         ]);
 
-        $data = ['quantity' => $request->quantity];
+        $existingItemIds = $order->items->pluck('id')->toArray();
+        $submittedItemIds = [];
 
-        if ($request->hasFile('item_image')) {
-            if ($order->item_image && \Illuminate\Support\Facades\Storage::disk('public')->exists($order->item_image)) {
-                \Illuminate\Support\Facades\Storage::disk('public')->delete($order->item_image);
+        foreach ($request->items as $index => $itemData) {
+            $item = [
+                'quantity' => $itemData['quantity'],
+                'description' => $itemData['description'] ?? null,
+                'length_inch' => null,
+                'length_cm' => null,
+                'breadth_inch' => null,
+                'breadth_cm' => null,
+            ];
+            
+            if (isset($itemData['unit'])) {
+                if ($itemData['unit'] == 'inch') {
+                    $item['length_inch'] = $itemData['length'] ?? null;
+                    $item['breadth_inch'] = $itemData['breadth'] ?? null;
+                } else {
+                    $item['length_cm'] = $itemData['length'] ?? null;
+                    $item['breadth_cm'] = $itemData['breadth'] ?? null;
+                }
             }
-            $data['item_image'] = $request->file('item_image')->store('orders', 'public');
+
+            if (isset($itemData['id']) && in_array($itemData['id'], $existingItemIds)) {
+                $orderItem = $order->items()->find($itemData['id']);
+                $submittedItemIds[] = $orderItem->id;
+                
+                if (isset($itemData['item_image']) && $itemData['item_image']) {
+                    if ($orderItem->item_image && file_exists(public_path($orderItem->item_image))) {
+                        unlink(public_path($orderItem->item_image));
+                    }
+                    $imageName = time() . '_' . uniqid() . '.' . $itemData['item_image']->getClientOriginalExtension();
+                    $itemData['item_image']->move(public_path('orders'), $imageName);
+                    $item['item_image'] = 'orders/' . $imageName;
+                }
+                
+                $orderItem->update($item);
+            } else {
+                if (isset($itemData['item_image']) && $itemData['item_image']) {
+                    $imageName = time() . '_' . uniqid() . '.' . $itemData['item_image']->getClientOriginalExtension();
+                    $itemData['item_image']->move(public_path('orders'), $imageName);
+                    $item['item_image'] = 'orders/' . $imageName;
+                }
+                $newItem = $order->items()->create($item);
+                $submittedItemIds[] = $newItem->id;
+            }
         }
 
-        $order->update($data);
+        // Delete items that were removed in the UI
+        $itemsToDelete = array_diff($existingItemIds, $submittedItemIds);
+        foreach ($itemsToDelete as $itemId) {
+            $orderItem = $order->items()->find($itemId);
+            if ($orderItem && $orderItem->item_image && file_exists(public_path($orderItem->item_image))) {
+                unlink(public_path($orderItem->item_image));
+            }
+            if($orderItem) $orderItem->delete();
+        }
+
         return redirect()->route('client.orders.index')->with('success', 'Order updated successfully.');
     }
 
@@ -70,8 +144,10 @@ class OrderController extends Controller
         if ($order->client_id != auth()->guard('client')->id()) {
             abort(403);
         }
-        if ($order->item_image && \Illuminate\Support\Facades\Storage::disk('public')->exists($order->item_image)) {
-            \Illuminate\Support\Facades\Storage::disk('public')->delete($order->item_image);
+        foreach ($order->items as $item) {
+            if ($item->item_image && file_exists(public_path($item->item_image))) {
+                unlink(public_path($item->item_image));
+            }
         }
         $order->delete();
         return redirect()->route('client.orders.index')->with('success', 'Order deleted successfully.');

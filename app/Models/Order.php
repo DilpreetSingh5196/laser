@@ -8,8 +8,6 @@ class Order extends Model
 {
     protected $fillable = [
         'client_id',
-        'item_image',
-        'quantity',
         'price',
         'status',
         'payment_status',
@@ -19,5 +17,10 @@ class Order extends Model
     public function client()
     {
         return $this->belongsTo(Client::class);
+    }
+
+    public function items()
+    {
+        return $this->hasMany(OrderItem::class);
     }
 }

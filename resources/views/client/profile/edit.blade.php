@@ -45,17 +45,32 @@
                     @method('PUT')
                     <div class="mb-3">
                         <label class="form-label">Current Password</label>
-                        <input type="password" name="current_password" class="form-control @error('current_password') is-invalid @enderror" required>
-                        @error('current_password')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        <div class="input-group">
+                            <input type="password" name="current_password" id="client_current_password" class="form-control @error('current_password') is-invalid @enderror" required>
+                            <button class="btn btn-outline-secondary toggle-password" type="button" data-target="#client_current_password">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </div>
+                        @error('current_password')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
                     </div>
                     <div class="mb-3">
                         <label class="form-label">New Password</label>
-                        <input type="password" name="password" class="form-control @error('password') is-invalid @enderror" required>
-                        @error('password')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        <div class="input-group">
+                            <input type="password" name="password" id="client_password" class="form-control @error('password') is-invalid @enderror" required>
+                            <button class="btn btn-outline-secondary toggle-password" type="button" data-target="#client_password">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </div>
+                        @error('password')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Confirm New Password</label>
-                        <input type="password" name="password_confirmation" class="form-control" required>
+                        <div class="input-group">
+                            <input type="password" name="password_confirmation" id="client_password_confirmation" class="form-control" required>
+                            <button class="btn btn-outline-secondary toggle-password" type="button" data-target="#client_password_confirmation">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </div>
                     </div>
                     <button type="submit" class="btn btn-danger">Change Password</button>
                 </form>
@@ -63,4 +78,24 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.toggle-password').forEach(button => {
+        button.addEventListener('click', function() {
+            const target = document.querySelector(this.getAttribute('data-target'));
+            const icon = this.querySelector('i');
+            if (target.type === 'password') {
+                target.type = 'text';
+                icon.classList.remove('bi-eye');
+                icon.classList.add('bi-eye-slash');
+            } else {
+                target.type = 'password';
+                icon.classList.remove('bi-eye-slash');
+                icon.classList.add('bi-eye');
+            }
+        });
+    });
+});
+</script>
 @endsection

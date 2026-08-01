@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use Illuminate\Http\Request;
+use App\Services\NotificationService;
 
 class PaymentController extends Controller
 {
@@ -39,6 +40,8 @@ class PaymentController extends Controller
         
         $order->admin_remark = $request->admin_remark;
         $order->save();
+
+        NotificationService::sendPaymentVerificationNotification($order);
 
         return redirect()->route('admin.payments.index')->with('success', 'Payment verified successfully.');
     }

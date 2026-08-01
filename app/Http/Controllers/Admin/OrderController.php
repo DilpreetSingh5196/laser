@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use Illuminate\Http\Request;
+use App\Services\NotificationService;
 
 class OrderController extends Controller
 {
@@ -47,6 +48,12 @@ class OrderController extends Controller
             'price' => $totalPrice,
             'status' => 'Price Assigned'
         ]);
+
+        NotificationService::sendOrderNotification(
+            $order,
+            "Price Assigned to Order (#{$order->id})",
+            "An administrator has assigned a price of Rs. " . number_format((float)$totalPrice, 2) . " to your order. You may now proceed with payment verification."
+        );
 
         return redirect()->route('admin.orders.index')->with('success', 'Prices assigned successfully.');
     }

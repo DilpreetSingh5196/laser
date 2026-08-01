@@ -38,6 +38,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::get('settings', [\App\Http\Controllers\Admin\SettingController::class, 'index'])->name('settings.index');
         Route::put('settings', [\App\Http\Controllers\Admin\SettingController::class, 'update'])->name('settings.update');
+        Route::put('settings/email', [\App\Http\Controllers\Admin\SettingController::class, 'updateEmailSettings'])->name('settings.update-email');
+        Route::post('settings/test-email', [\App\Http\Controllers\Admin\SettingController::class, 'sendTestEmail'])->name('settings.test-email');
 
         Route::get('reports', [\App\Http\Controllers\Admin\ReportController::class, 'index'])->name('reports.index');
         Route::get('reports/orders', [\App\Http\Controllers\Admin\ReportController::class, 'fetchOrders'])->name('reports.orders');

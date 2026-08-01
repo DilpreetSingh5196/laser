@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Http\Requests\StoreOrderRequest;
 use Illuminate\Http\Request;
+use App\Services\NotificationService;
 
 class OrderController extends Controller
 {
@@ -54,6 +55,12 @@ class OrderController extends Controller
 
             $order->items()->create($item);
         }
+
+        NotificationService::sendOrderNotification(
+            $order,
+            "New Order Created (#{$order->id})",
+            "A new order has been submitted and is pending administrative price assignment."
+        );
 
         return redirect()->route('client.orders.index')->with('success', 'Order created successfully.');
     }

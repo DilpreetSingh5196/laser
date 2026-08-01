@@ -214,7 +214,7 @@
                 Swal.fire({
                     icon: 'success',
                     title: 'Success!',
-                    text: "{{ session('success') }}",
+                    text: @json(session('success')),
                     timer: 3000,
                     showConfirmButton: false
                 });
@@ -224,7 +224,7 @@
                 Swal.fire({
                     icon: 'error',
                     title: 'Error!',
-                    text: "{{ session('error') }}",
+                    text: @json(session('error')),
                     timer: 4000,
                     showConfirmButton: true
                 });

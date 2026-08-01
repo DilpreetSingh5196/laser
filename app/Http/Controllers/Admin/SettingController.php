@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Setting;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\OrderNotificationMail;
 
 class SettingController extends Controller
 {
@@ -57,5 +59,61 @@ class SettingController extends Controller
         }
 
         return back()->with('success', 'Settings updated successfully.');
+    }
+
+    public function updateEmailSettings(Request $request)
+    {
+        $request->validate([
+            'notification_emails' => 'nullable|array',
+            'notification_emails.*' => 'nullable|email',
+            'smtp_host' => 'nullable|string|max:255',
+            'smtp_port' => 'nullable|numeric',
+            'smtp_username' => 'nullable|string|max:255',
+            'smtp_password' => 'nullable|string|max:255',
+            'smtp_encryption' => 'nullable|string|max:50',
+            'smtp_from_address' => 'nullable|email|max:255',
+            'smtp_from_name' => 'nullable|string|max:255',
+        ]);
+
+        $emails = $request->input('notification_emails', []);
+        $cleanEmails = array_values(array_filter(array_map('trim', $emails), function($email) {
+            return !empty($email) && filter_var($email, FILTER_VALIDATE_EMAIL);
+        }));
+        Setting::set('notification_emails', json_encode($cleanEmails));
+
+        $smtpKeys = [
+            'smtp_host',
+            'smtp_port',
+            'smtp_username',
+            'smtp_password',
+            'smtp_encryption',
+            'smtp_from_address',
+            'smtp_from_name'
+        ];
+
+        foreach ($smtpKeys as $key) {
+            Setting::set($key, $request->input($key, ''));
+        }
+
+        return back()->with('success', 'Email & SMTP settings updated successfully.');
+    }
+
+    public function sendTestEmail(Request $request)
+    {
+        $request->validate([
+            'test_email' => 'required|email'
+        ]);
+
+        try {
+            Mail::to($request->test_email)->send(new OrderNotificationMail(
+                null,
+                'SMTP Diagnostic Test',
+                'Congratulations! Your dynamic SMTP configuration is functioning correctly.'
+            ));
+
+            return back()->with('success', 'Test email sent successfully to ' . $request->test_email);
+        } catch (\Exception $e) {
+            return back()->with('error', 'Failed to send test email: ' . $e->getMessage());
+        }
     }
 }

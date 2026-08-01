@@ -43,8 +43,12 @@ class OrderController extends Controller
             }
 
             if (isset($itemData['item_image']) && $itemData['item_image']) {
+                $uploadDir = public_path('orders');
+                if (!file_exists($uploadDir)) {
+                    mkdir($uploadDir, 0777, true);
+                }
                 $imageName = time() . '_' . uniqid() . '.' . $itemData['item_image']->getClientOriginalExtension();
-                $itemData['item_image']->move(public_path('orders'), $imageName);
+                $itemData['item_image']->move($uploadDir, $imageName);
                 $item['item_image'] = 'orders/' . $imageName;
             }
 
@@ -109,16 +113,24 @@ class OrderController extends Controller
                     if ($orderItem->item_image && file_exists(public_path($orderItem->item_image))) {
                         unlink(public_path($orderItem->item_image));
                     }
+                    $uploadDir = public_path('orders');
+                    if (!file_exists($uploadDir)) {
+                        mkdir($uploadDir, 0777, true);
+                    }
                     $imageName = time() . '_' . uniqid() . '.' . $itemData['item_image']->getClientOriginalExtension();
-                    $itemData['item_image']->move(public_path('orders'), $imageName);
+                    $itemData['item_image']->move($uploadDir, $imageName);
                     $item['item_image'] = 'orders/' . $imageName;
                 }
                 
                 $orderItem->update($item);
             } else {
                 if (isset($itemData['item_image']) && $itemData['item_image']) {
+                    $uploadDir = public_path('orders');
+                    if (!file_exists($uploadDir)) {
+                        mkdir($uploadDir, 0777, true);
+                    }
                     $imageName = time() . '_' . uniqid() . '.' . $itemData['item_image']->getClientOriginalExtension();
-                    $itemData['item_image']->move(public_path('orders'), $imageName);
+                    $itemData['item_image']->move($uploadDir, $imageName);
                     $item['item_image'] = 'orders/' . $imageName;
                 }
                 $newItem = $order->items()->create($item);

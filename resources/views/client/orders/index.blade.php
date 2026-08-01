@@ -31,21 +31,6 @@
                                     <img src="{{ asset($item->item_image) }}" alt="Item {{ $index + 1 }}" width="45" height="45" style="cursor: pointer; object-fit: cover; border-radius: 4px;" data-bs-toggle="modal" data-bs-target="#imageModal{{ $item->id }}">
                                     <div class="text-muted" style="font-size: 0.7rem;">#{{ $index + 1 }}</div>
                                 </div>
-                                
-                                <!-- Image Modal -->
-                                <div class="modal fade" id="imageModal{{ $item->id }}" tabindex="-1" aria-hidden="true">
-                                  <div class="modal-dialog modal-lg">
-                                    <div class="modal-content">
-                                      <div class="modal-header">
-                                        <h5 class="modal-title">Item #{{ $index + 1 }} Image (Order #{{ $order->id }})</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                      </div>
-                                      <div class="modal-body text-center">
-                                        <img src="{{ asset($item->item_image) }}" class="img-fluid" alt="Item">
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
                             @else
                                 <div class="text-center">
                                     <div class="bg-light d-flex align-items-center justify-content-center" style="width: 45px; height: 45px; border-radius: 4px;">
@@ -79,57 +64,6 @@
                         <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#payModal{{ $order->id }}">
                             Pay Now
                         </button>
-                        
-                        <!-- Pay Modal -->
-                        <div class="modal fade" id="payModal{{ $order->id }}" tabindex="-1" aria-hidden="true">
-                          <div class="modal-dialog">
-                            <div class="modal-content">
-                              <form action="{{ route('client.payment.pay', $order) }}" method="POST">
-                                  @csrf
-                                  @method('PUT')
-                                  <div class="modal-header">
-                                    <h5 class="modal-title">Confirm Payment</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                  </div>
-                                  <div class="modal-body text-center">
-                                    <p>Please make a payment of <strong>Rs. {{ $order->price }}</strong> for Order #{{ $order->id }}.</p>
-                                    
-                                    @php
-                                        $qr = \App\Models\Setting::get('payment_qr_code');
-                                        $upi = \App\Models\Setting::get('payment_upi_id');
-                                        $phone = \App\Models\Setting::get('payment_phone');
-                                    @endphp
-
-                                    @if($qr || $upi || $phone)
-                                        <div class="card my-3 shadow-sm">
-                                            <div class="card-body">
-                                                <h6 class="mb-3 text-primary">Payment Details</h6>
-                                                
-                                                @if($qr)
-                                                    <img src="{{ asset('storage/' . $qr) }}" alt="QR Code" class="img-fluid img-thumbnail mb-3" style="max-width: 200px;">
-                                                @endif
-                                                
-                                                @if($upi)
-                                                    <p class="mb-1"><strong>UPI ID:</strong> {{ $upi }}</p>
-                                                @endif
-                                                
-                                                @if($phone)
-                                                    <p class="mb-0"><strong>Phone:</strong> {{ $phone }}</p>
-                                                @endif
-                                            </div>
-                                        </div>
-                                    @endif
-
-                                    <p class="text-muted"><small>After making the payment, click "Proceed with Payment" to notify the admin.</small></p>
-                                  </div>
-                                  <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                    <button type="submit" class="btn btn-success">Proceed with Payment</button>
-                                  </div>
-                              </form>
-                            </div>
-                          </div>
-                        </div>
                     @elseif($order->payment_status == 'Approved')
                         <a href="{{ route('client.orders.bill', $order) }}" target="_blank" class="btn btn-sm btn-info">View Bill</a>
                     @else
@@ -223,4 +157,99 @@
 </div>
 
 {{ $orders->links('pagination::bootstrap-5') }}
+
+@foreach($orders as $order)
+    @foreach($order->items as $index => $item)
+        @if($item->item_image)
+            <!-- Image Modal -->
+            <div class="modal fade" id="imageModal{{ $item->id }}" tabindex="-1" aria-hidden="true">
+              <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title">Item #{{ $index + 1 }} Image (Order #{{ $order->id }})</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body text-center">
+                    <img src="{{ asset($item->item_image) }}" class="img-fluid" alt="Item">
+                  </div>
+                </div>
+              </div>
+            </div>
+        @endif
+    @endforeach
+
+    @if($order->status == 'Price Assigned')
+        <!-- Pay Modal -->
+        <div class="modal fade" id="payModal{{ $order->id }}" tabindex="-1" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <form action="{{ route('client.payment.pay', $order) }}" method="POST">
+                  @csrf
+                  @method('PUT')
+                  <div class="modal-header">
+                    <h5 class="modal-title">Confirm Payment</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body text-center">
+                    <p>Please make a payment of <strong>Rs. {{ $order->price }}</strong> for Order #{{ $order->id }}.</p>
+                    
+                    @php
+                        $qr = \App\Models\Setting::get('payment_qr_code');
+                        $upi = \App\Models\Setting::get('payment_upi_id');
+                        $phone = \App\Models\Setting::get('payment_phone');
+                    @endphp
+
+                    @if($upi)
+                        @php
+                            $upiUrl = "upi://pay?pa=" . urlencode($upi) . "&pn=" . urlencode(\App\Models\Setting::get('company_name', 'Jai Maa Durga')) . "&am=" . number_format((float)$order->price, 2, '.', '') . "&tr=" . urlencode('ORDER' . $order->id) . "&tn=" . urlencode('Payment for Order #' . $order->id) . "&cu=INR";
+                        @endphp
+                        <div class="p-3 my-3 rounded shadow-sm text-start" style="background: linear-gradient(135deg, #f3ebff 0%, #e6f0ff 100%); border: 1px solid #d8ccf1;">
+                            <h6 class="text-dark fw-bold mb-2 text-center"><i class="bi bi-phone-vibrate text-primary me-1"></i> Pay Directly on Mobile</h6>
+                            <a href="{{ $upiUrl }}" class="btn btn-primary w-100 py-2 fw-bold shadow-sm d-flex align-items-center justify-content-center mb-2" style="background: linear-gradient(90deg, #5f259f 0%, #1a73e8 100%); border: none; border-radius: 8px; font-size: 1.05rem; text-decoration: none;">
+                                <i class="bi bi-lightning-charge-fill text-warning me-2"></i> Open GPay / PhonePe / Paytm
+                            </a>
+                            <small class="text-muted d-block text-center" style="font-size: 0.8rem;">Amount (<b>Rs. {{ number_format((float)$order->price, 2) }}</b>) & UPI ID will open in your app automatically.</small>
+                        </div>
+                    @endif
+
+                    @if($qr || $upi || $phone)
+                        <div class="card my-3 shadow-sm">
+                            <div class="card-body">
+                                <h6 class="mb-3 text-primary">Scan QR Code or Use Details</h6>
+                                
+                                @if($qr)
+                                    @if($upi)
+                                        <a href="{{ $upiUrl }}" title="Tap QR code to open UPI payment app">
+                                            <img src="{{ asset('storage/' . $qr) }}" alt="QR Code" class="img-fluid img-thumbnail mb-2" style="max-width: 200px;">
+                                        </a>
+                                        <small class="d-block text-muted mb-3" style="font-size: 0.75rem;">(Tap QR Code on mobile to pay directly)</small>
+                                    @else
+                                        <img src="{{ asset('storage/' . $qr) }}" alt="QR Code" class="img-fluid img-thumbnail mb-3" style="max-width: 200px;">
+                                    @endif
+                                @endif
+                                
+                                @if($upi)
+                                    <p class="mb-1"><strong>UPI ID:</strong> <span class="badge bg-light text-dark border fs-6">{{ $upi }}</span></p>
+                                @endif
+                                
+                                @if($phone)
+                                    <p class="mb-0"><strong>Phone:</strong> {{ $phone }}</p>
+                                @endif
+                            </div>
+                        </div>
+                    @endif
+
+                    <p class="text-muted"><small>After making the payment, click "Proceed with Payment" to notify the admin.</small></p>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success">Proceed with Payment</button>
+                  </div>
+              </form>
+            </div>
+          </div>
+        </div>
+    @endif
+@endforeach
+
 @endsection

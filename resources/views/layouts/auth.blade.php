@@ -8,8 +8,10 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 </head>
 <body class="bg-light">
-    <div class="container mt-5">
-        @yield('content')
+    <div class="container d-flex justify-content-center align-items-center min-vh-100 py-4">
+        <div class="w-100" style="max-width: 450px;">
+            @yield('content')
+        </div>
     </div>
 </body>
 </html>

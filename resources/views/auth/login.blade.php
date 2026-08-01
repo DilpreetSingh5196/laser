@@ -2,14 +2,6 @@
 
 @section('content')
 <style>
-    body {
-        background-color: #f8f9fa;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        min-height: 100vh;
-        margin: 0;
-    }
     .login-card {
         border: none;
         border-radius: 12px;
@@ -23,7 +15,7 @@
         background-color: #054c86; /* Dark blue from the image */
         color: white;
         text-align: center;
-        padding: 30px 20px;
+        padding: 25px 20px;
     }
     .login-header h2 {
         font-weight: 700;
@@ -35,8 +27,16 @@
         opacity: 0.9;
     }
     .login-body {
-        padding: 30px 40px;
+        padding: 25px 20px;
         background-color: white;
+    }
+    @media (min-width: 576px) {
+        .login-header {
+            padding: 30px 20px;
+        }
+        .login-body {
+            padding: 30px 35px;
+        }
     }
     .form-label {
         font-weight: 600;

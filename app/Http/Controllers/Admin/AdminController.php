@@ -18,7 +18,9 @@ class AdminController extends Controller
             $query->where('name', 'like', '%' . $request->search . '%')
                   ->orWhere('email', 'like', '%' . $request->search . '%');
         }
-        $admins = $query->paginate(10);
+        $limit = (int) $request->input('limit', 10);
+        if ($limit <= 0) $limit = 10;
+        $admins = $query->paginate($limit)->appends($request->query());
         return view('admin.admins.index', compact('admins'));
     }
 

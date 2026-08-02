@@ -19,7 +19,9 @@ class PaymentController extends Controller
                   ->orWhere('firm_name', 'like', '%' . $request->search . '%');
             });
         }
-        $payments = $query->orderBy('updated_at', 'desc')->paginate(10);
+        $limit = (int) $request->input('limit', 10);
+        if ($limit <= 0) $limit = 10;
+        $payments = $query->orderBy('updated_at', 'desc')->paginate($limit)->appends($request->query());
         return view('admin.payments.index', compact('payments'));
     }
 

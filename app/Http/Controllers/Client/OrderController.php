@@ -13,7 +13,9 @@ class OrderController extends Controller
     public function index(Request $request)
     {
         $clientId = auth()->guard('client')->id();
-        $orders = Order::where('client_id', $clientId)->orderBy('id', 'desc')->paginate(10);
+        $limit = (int) $request->input('limit', 10);
+        if ($limit <= 0) $limit = 10;
+        $orders = Order::where('client_id', $clientId)->orderBy('id', 'desc')->paginate($limit)->appends($request->query());
         return view('client.orders.index', compact('orders'));
     }
 

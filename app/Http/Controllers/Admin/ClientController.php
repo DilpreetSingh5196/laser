@@ -20,7 +20,9 @@ class ClientController extends Controller
                   ->orWhere('email', 'like', '%' . $request->search . '%')
                   ->orWhere('mobile_number', 'like', '%' . $request->search . '%');
         }
-        $clients = $query->paginate(10);
+        $limit = (int) $request->input('limit', 10);
+        if ($limit <= 0) $limit = 10;
+        $clients = $query->paginate($limit)->appends($request->query());
         return view('admin.clients.index', compact('clients'));
     }
 

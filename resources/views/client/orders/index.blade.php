@@ -1,9 +1,22 @@
 @extends('layouts.client')
 
 @section('content')
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>My Orders</h2>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="mb-0">My Orders</h2>
     <a href="{{ route('client.orders.create') }}" class="btn btn-primary">Create Order</a>
+</div>
+
+<div class="d-flex justify-content-end mb-3">
+    <form method="GET" action="{{ route('client.orders.index') }}" class="d-flex align-items-center">
+        <label class="me-2 text-muted small fw-bold text-nowrap">Show:</label>
+        <select name="limit" class="form-select form-select-sm" style="width: 85px;" onchange="this.form.submit()">
+            <option value="10" {{ request('limit', 10) == 10 ? 'selected' : '' }}>10</option>
+            <option value="25" {{ request('limit') == 25 ? 'selected' : '' }}>25</option>
+            <option value="50" {{ request('limit') == 50 ? 'selected' : '' }}>50</option>
+            <option value="100" {{ request('limit') == 100 ? 'selected' : '' }}>100</option>
+        </select>
+        <span class="ms-2 text-muted small text-nowrap">entries</span>
+    </form>
 </div>
 
 <div class="table-responsive d-none d-md-block">
@@ -156,7 +169,14 @@
     @endforelse
 </div>
 
-{{ $orders->links('pagination::bootstrap-5') }}
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-center mt-3">
+    <div class="text-muted small mb-2 mb-md-0">
+        Showing {{ $orders->firstItem() ?? 0 }} to {{ $orders->lastItem() ?? 0 }} of {{ $orders->total() }} entries
+    </div>
+    <div>
+        {{ $orders->links('pagination::bootstrap-5') }}
+    </div>
+</div>
 
 @foreach($orders as $order)
     @foreach($order->items as $index => $item)

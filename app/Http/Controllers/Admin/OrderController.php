@@ -18,7 +18,9 @@ class OrderController extends Controller
                   ->orWhere('firm_name', 'like', '%' . $request->search . '%');
             });
         }
-        $orders = $query->orderBy('id', 'desc')->paginate(10);
+        $limit = (int) $request->input('limit', 10);
+        if ($limit <= 0) $limit = 10;
+        $orders = $query->orderBy('id', 'desc')->paginate($limit)->appends($request->query());
         return view('admin.orders.index', compact('orders'));
     }
 

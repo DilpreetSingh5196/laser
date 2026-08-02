@@ -4,9 +4,23 @@
 <h2 class="mb-4">Orders</h2>
 
 <form method="GET" action="{{ route('admin.orders.index') }}" class="mb-4">
-    <div class="input-group">
-        <input type="text" name="search" class="form-control" placeholder="Search by client or firm name" value="{{ request('search') }}">
-        <button class="btn btn-outline-secondary" type="submit">Search</button>
+    <div class="row g-2 align-items-center">
+        <div class="col-12 col-sm-8 col-md-9">
+            <div class="input-group">
+                <input type="text" name="search" class="form-control" placeholder="Search by client or firm name" value="{{ request('search') }}">
+                <button class="btn btn-outline-secondary" type="submit">Search</button>
+            </div>
+        </div>
+        <div class="col-12 col-sm-4 col-md-3 d-flex justify-content-sm-end align-items-center">
+            <label class="me-2 text-muted small fw-bold text-nowrap">Show:</label>
+            <select name="limit" class="form-select form-select-sm" style="width: 85px;" onchange="this.form.submit()">
+                <option value="10" {{ request('limit', 10) == 10 ? 'selected' : '' }}>10</option>
+                <option value="25" {{ request('limit') == 25 ? 'selected' : '' }}>25</option>
+                <option value="50" {{ request('limit') == 50 ? 'selected' : '' }}>50</option>
+                <option value="100" {{ request('limit') == 100 ? 'selected' : '' }}>100</option>
+            </select>
+            <span class="ms-2 text-muted small text-nowrap">entries</span>
+        </div>
     </div>
 </form>
 
@@ -138,7 +152,14 @@
     @endforelse
 </div>
 
-{{ $orders->links('pagination::bootstrap-5') }}
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-center mt-3">
+    <div class="text-muted small mb-2 mb-md-0">
+        Showing {{ $orders->firstItem() ?? 0 }} to {{ $orders->lastItem() ?? 0 }} of {{ $orders->total() }} entries
+    </div>
+    <div>
+        {{ $orders->links('pagination::bootstrap-5') }}
+    </div>
+</div>
 
 @foreach($orders as $order)
     @foreach($order->items as $index => $item)

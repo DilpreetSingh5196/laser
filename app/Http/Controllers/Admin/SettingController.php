@@ -50,12 +50,17 @@ class SettingController extends Controller
         if ($request->hasFile('payment_qr_code')) {
             // Delete old QR code if exists
             $oldQr = Setting::get('payment_qr_code');
-            if ($oldQr && Storage::disk('public')->exists($oldQr)) {
-                Storage::disk('public')->delete($oldQr);
+            if ($oldQr && file_exists(public_path($oldQr))) {
+                @unlink(public_path($oldQr));
             }
 
-            $path = $request->file('payment_qr_code')->store('settings', 'public');
-            Setting::set('payment_qr_code', $path);
+            $uploadDir = public_path('settings');
+            if (!file_exists($uploadDir)) {
+                mkdir($uploadDir, 0777, true);
+            }
+            $imageName = time() . '_' . uniqid() . '.' . $request->file('payment_qr_code')->getClientOriginalExtension();
+            $request->file('payment_qr_code')->move($uploadDir, $imageName);
+            Setting::set('payment_qr_code', 'settings/' . $imageName);
         }
 
         return back()->with('success', 'Settings updated successfully.');

@@ -220,11 +220,11 @@
                                 @if($qr)
                                     @if($upi)
                                         <a href="{{ $upiUrl }}" title="Tap QR code to open UPI payment app">
-                                            <img src="{{ asset('storage/' . $qr) }}" alt="QR Code" class="img-fluid img-thumbnail mb-2" style="max-width: 200px;">
+                                            <img src="{{ asset($qr) }}" alt="QR Code" class="img-fluid img-thumbnail mb-2" style="max-width: 200px;">
                                         </a>
                                         <small class="d-block text-muted mb-3" style="font-size: 0.75rem;">(Tap QR Code on mobile to pay directly)</small>
                                     @else
-                                        <img src="{{ asset('storage/' . $qr) }}" alt="QR Code" class="img-fluid img-thumbnail mb-3" style="max-width: 200px;">
+                                        <img src="{{ asset($qr) }}" alt="QR Code" class="img-fluid img-thumbnail mb-3" style="max-width: 200px;">
                                     @endif
                                 @endif
                                 

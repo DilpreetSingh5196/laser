@@ -52,7 +52,7 @@
                         @if(\App\Models\Setting::get('payment_qr_code'))
                             <div class="mt-3">
                                 <strong>Current QR Code:</strong><br>
-                                <img src="{{ asset('storage/' . \App\Models\Setting::get('payment_qr_code')) }}" alt="QR Code" class="img-thumbnail mt-2" style="max-height: 200px;">
+                                <img src="{{ asset(\App\Models\Setting::get('payment_qr_code')) }}" alt="QR Code" class="img-thumbnail mt-2" style="max-height: 200px;">
                             </div>
                         @endif
                     </div>

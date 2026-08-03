@@ -70,12 +70,12 @@
                 </td>
                 <td>{{ $order->price ? 'Rs. ' . $order->price : 'N/A' }}</td>
                 <td>
-                    <span class="badge {{ $order->status == 'Pending' ? 'bg-warning text-dark' : 'bg-info text-dark' }}">{{ $order->status }}</span>
+                    <span class="badge {{ str_starts_with((string)$order->status, 'Approved') ? 'bg-success' : ($order->status == 'Pending' ? 'bg-warning text-dark' : 'bg-info text-dark') }}">{{ $order->status }}</span>
                 </td>
                 <td>
                     <div class="d-flex align-items-center">
                         <a href="{{ route('admin.orders.show', $order) }}" class="btn btn-sm btn-primary me-1">View</a>
-                        @if($order->payment_status == 'Approved')
+                        @if(str_starts_with((string)$order->payment_status, 'Approved'))
                             <a href="{{ route('admin.orders.bill', $order) }}" target="_blank" class="btn btn-sm btn-info me-1">Bill</a>
                         @endif
                         <form action="{{ route('admin.orders.destroy', $order) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this order?');">
@@ -100,7 +100,7 @@
         <div class="card shadow-sm mb-3 border-0">
             <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
                 <strong>Order #{{ $order->id }}</strong>
-                <span class="badge {{ $order->status == 'Pending' ? 'bg-warning text-dark' : 'bg-info text-dark' }}">{{ $order->status }}</span>
+                <span class="badge {{ str_starts_with((string)$order->status, 'Approved') ? 'bg-success' : ($order->status == 'Pending' ? 'bg-warning text-dark' : 'bg-info text-dark') }}">{{ $order->status }}</span>
             </div>
             <div class="card-body">
                 <div class="mb-2">
@@ -136,7 +136,7 @@
                 
                 <div class="d-flex gap-2 mt-2">
                     <a href="{{ route('admin.orders.show', $order) }}" class="btn btn-primary flex-fill">View</a>
-                    @if($order->payment_status == 'Approved')
+                    @if(str_starts_with((string)$order->payment_status, 'Approved'))
                         <a href="{{ route('admin.orders.bill', $order) }}" target="_blank" class="btn btn-info flex-fill text-white">Bill</a>
                     @endif
                     <form action="{{ route('admin.orders.destroy', $order) }}" method="POST" class="flex-fill d-flex" onsubmit="return confirm('Are you sure you want to delete this order?');">

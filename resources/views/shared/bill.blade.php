@@ -134,8 +134,8 @@
         
         <div class="mt-5 text-center text-muted" style="font-size: 0.85em;">
             <p>Thank you for your business!</p>
-            @if($order->payment_status == 'Approved')
-                <p class="text-success fw-bold">This bill has been paid and approved.</p>
+            @if(str_starts_with((string)$order->payment_status, 'Approved'))
+                <p class="text-success fw-bold">This bill has been paid and approved ({{ $order->payment_status == 'Approved with Cash' ? 'Payment Mode: Cash' : 'Verified Online' }}).</p>
             @endif
         </div>
     </div>

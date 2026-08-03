@@ -11,7 +11,7 @@ class PaymentController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Order::with('client')->whereIn('status', ['Payment Verification Pending', 'Approved', 'Payment Rejected']);
+        $query = Order::with('client')->whereIn('status', ['Payment Verification Pending', 'Approved', 'Approved with Cash', 'Payment Rejected']);
         
         if ($request->has('search')) {
             $query->whereHas('client', function($q) use ($request) {
@@ -33,8 +33,9 @@ class PaymentController extends Controller
         ]);
 
         if ($request->action == 'approve') {
-            $order->status = 'Approved';
-            $order->payment_status = 'Approved';
+            $statusText = $request->has('payment_mode_cash') ? 'Approved with Cash' : 'Approved';
+            $order->status = $statusText;
+            $order->payment_status = $statusText;
 
             // When payment is approved, automatically remove heavy design files from server storage
             foreach ($order->items as $item) {

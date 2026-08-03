@@ -62,10 +62,10 @@
                         @endforeach
                     </ul>
                 </td>
-                <td><span class="badge bg-secondary">{{ $order->status }}</span></td>
+                <td><span class="badge {{ str_starts_with((string)$order->status, 'Approved') ? 'bg-success' : 'bg-secondary' }}">{{ $order->status }}</span></td>
                 <td>{{ $order->price ? 'Rs. ' . $order->price : 'Waiting for Admin' }}</td>
                 <td>
-                    <span class="badge {{ $order->payment_status == 'Approved' ? 'bg-success' : ($order->payment_status == 'Rejected' ? 'bg-danger' : 'bg-warning text-dark') }}">
+                    <span class="badge {{ str_starts_with((string)$order->payment_status, 'Approved') ? 'bg-success' : ($order->payment_status == 'Rejected' ? 'bg-danger' : 'bg-warning text-dark') }}">
                         {{ $order->payment_status }}
                     </span>
                     @if($order->admin_remark)
@@ -77,7 +77,7 @@
                         <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#payModal{{ $order->id }}">
                             Pay Now
                         </button>
-                    @elseif($order->payment_status == 'Approved')
+                    @elseif(str_starts_with((string)$order->payment_status, 'Approved'))
                         <a href="{{ route('client.orders.bill', $order) }}" target="_blank" class="btn btn-sm btn-info">View Bill</a>
                     @else
                         <button class="btn btn-sm btn-secondary" disabled>Pay Now</button>
@@ -109,7 +109,7 @@
         <div class="card shadow-sm mb-3 border-0">
             <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                 <strong>Order #{{ $order->id }}</strong>
-                <span class="badge bg-light text-dark">{{ $order->status }}</span>
+                <span class="badge {{ str_starts_with((string)$order->status, 'Approved') ? 'bg-success text-white' : 'bg-light text-dark' }}">{{ $order->status }}</span>
             </div>
             <div class="card-body">
                 <div class="mb-3 d-flex flex-wrap gap-2">
@@ -135,7 +135,7 @@
                 </div>
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <span class="fw-bold">Payment:</span>
-                    <span class="badge {{ $order->payment_status == 'Approved' ? 'bg-success' : ($order->payment_status == 'Rejected' ? 'bg-danger' : 'bg-warning text-dark') }}">
+                    <span class="badge {{ str_starts_with((string)$order->payment_status, 'Approved') ? 'bg-success' : ($order->payment_status == 'Rejected' ? 'bg-danger' : 'bg-warning text-dark') }}">
                         {{ $order->payment_status }}
                     </span>
                 </div>
@@ -145,7 +145,7 @@
                 <div class="d-grid gap-2">
                     @if($order->status == 'Price Assigned')
                         <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#payModal{{ $order->id }}">Pay Now</button>
-                    @elseif($order->payment_status == 'Approved')
+                    @elseif(str_starts_with((string)$order->payment_status, 'Approved'))
                         <a href="{{ route('client.orders.bill', $order) }}" target="_blank" class="btn btn-info text-white">View Bill</a>
                     @else
                         <button class="btn btn-secondary" disabled>Pay Now</button>

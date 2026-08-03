@@ -44,8 +44,8 @@
                 <td>
                     @if($order->payment_status == 'Pending Verification')
                         <span class="badge bg-warning text-dark">Pending Verification</span>
-                    @elseif($order->payment_status == 'Approved')
-                        <span class="badge bg-success">Approved</span>
+                    @elseif(str_starts_with((string)$order->payment_status, 'Approved'))
+                        <span class="badge bg-success">{{ $order->payment_status }}</span>
                     @elseif($order->payment_status == 'Rejected')
                         <span class="badge bg-danger">Rejected</span>
                     @else
@@ -60,12 +60,18 @@
                         <div class="input-group mb-2">
                             <input type="text" name="admin_remark" class="form-control form-control-sm" placeholder="Remark (Optional)">
                         </div>
+                        <div class="form-check text-start mb-2">
+                            <input class="form-check-input" type="checkbox" name="payment_mode_cash" value="1" id="cashCheck{{ $order->id }}">
+                            <label class="form-check-label small fw-bold text-success" for="cashCheck{{ $order->id }}">
+                                <i class="bi bi-cash-stack"></i> Received via Cash
+                            </label>
+                        </div>
                         <button type="submit" name="action" value="approve" class="btn btn-sm btn-success w-100 mb-1">Approve</button>
                         <button type="submit" name="action" value="reject" class="btn btn-sm btn-danger w-100">Reject</button>
                     </form>
                     @else
                         <span class="text-muted d-block mb-1">{{ $order->admin_remark ?? 'No remarks' }}</span>
-                        @if($order->payment_status == 'Approved')
+                        @if(str_starts_with((string)$order->payment_status, 'Approved'))
                             <a href="{{ route('admin.orders.bill', $order) }}" target="_blank" class="btn btn-sm btn-info w-100">View Bill</a>
                         @endif
                     @endif
@@ -88,8 +94,8 @@
                     <h5 class="card-title mb-0">Order #{{ $order->id }}</h5>
                     @if($order->payment_status == 'Pending Verification')
                         <span class="badge bg-warning text-dark">Pending</span>
-                    @elseif($order->payment_status == 'Approved')
-                        <span class="badge bg-success">Approved</span>
+                    @elseif(str_starts_with((string)$order->payment_status, 'Approved'))
+                        <span class="badge bg-success">{{ $order->payment_status }}</span>
                     @elseif($order->payment_status == 'Rejected')
                         <span class="badge bg-danger">Rejected</span>
                     @else
@@ -111,6 +117,12 @@
                         <div class="mb-2">
                             <input type="text" name="admin_remark" class="form-control" placeholder="Remark (Optional)">
                         </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" name="payment_mode_cash" value="1" id="cashCheckMobile{{ $order->id }}">
+                            <label class="form-check-label small fw-bold text-success" for="cashCheckMobile{{ $order->id }}">
+                                <i class="bi bi-cash-stack"></i> Received via Cash
+                            </label>
+                        </div>
                         <div class="d-flex gap-2">
                             <button type="submit" name="action" value="approve" class="btn btn-success flex-fill">Approve</button>
                             <button type="submit" name="action" value="reject" class="btn btn-danger flex-fill">Reject</button>
@@ -118,7 +130,7 @@
                     </form>
                     @else
                         <div class="alert alert-light p-2 small mb-2 border">Remark: {{ $order->admin_remark ?? 'None' }}</div>
-                        @if($order->payment_status == 'Approved')
+                        @if(str_starts_with((string)$order->payment_status, 'Approved'))
                             <a href="{{ route('admin.orders.bill', $order) }}" target="_blank" class="btn btn-info w-100 text-white">View Bill</a>
                         @endif
                     @endif

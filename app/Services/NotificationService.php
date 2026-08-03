@@ -77,7 +77,8 @@ class NotificationService
         try {
             $order->load(['client', 'items']);
 
-            if ($order->payment_status === 'Approved') {
+            if (str_starts_with((string)$order->payment_status, 'Approved')) {
+                $modeText = ($order->payment_status === 'Approved with Cash') ? ' (Received via Cash)' : '';
                 // Dedicated client notification: "Your Order is Completed"
                 if ($order->client && !empty($order->client->email) && filter_var($order->client->email, FILTER_VALIDATE_EMAIL)) {
                     $clientEmail = trim($order->client->email);
@@ -85,7 +86,7 @@ class NotificationService
                         Mail::to($clientEmail)->send(new OrderNotificationMail(
                             $order,
                             "Your Order (#{$order->id}) is Completed!",
-                            "Great news! Your payment of Rs. " . number_format((float)$order->price, 2) . " for Order #{$order->id} has been verified and approved. Your order is now marked as Completed. You can review your finalized order details and item specifications below, or log into the portal to print your invoice bill." . ($order->admin_remark ? " Admin Note: {$order->admin_remark}" : "")
+                            "Great news! Your payment of Rs. " . number_format((float)$order->price, 2) . " for Order #{$order->id} has been verified and approved{$modeText}. Your order is now marked as Completed. You can review your finalized order details and item specifications below, or log into the portal to print your invoice bill." . ($order->admin_remark ? " Admin Note: {$order->admin_remark}" : "")
                         ));
                     } catch (\Exception $mailEx) {
                         Log::error("NotificationService: Failed delivery of order completion to client ({$clientEmail}). Error: " . $mailEx->getMessage());
@@ -99,7 +100,7 @@ class NotificationService
                         Mail::to($adminEmail)->send(new OrderNotificationMail(
                             $order,
                             "Order Completed & Payment Approved (#{$order->id})",
-                            "Payment of Rs. " . number_format((float)$order->price, 2) . " for Order #{$order->id} from client " . ($order->client->firm_name ?? '') . " (" . ($order->client->client_name ?? '') . ") has been approved and marked as completed." . ($order->admin_remark ? " Remark: {$order->admin_remark}" : "")
+                            "Payment of Rs. " . number_format((float)$order->price, 2) . " for Order #{$order->id} from client " . ($order->client->firm_name ?? '') . " (" . ($order->client->client_name ?? '') . ") has been approved{$modeText} and marked as completed." . ($order->admin_remark ? " Remark: {$order->admin_remark}" : "")
                         ));
                     } catch (\Exception $mailEx) {
                         Log::error("NotificationService: Failed delivery to admin ({$adminEmail}). Error: " . $mailEx->getMessage());

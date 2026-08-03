@@ -139,7 +139,7 @@
                 </div>
                 <div class="d-flex justify-content-between align-items-center">
                     <span class="fw-bold">Payment:</span>
-                    <span class="badge {{ $order->payment_status == 'Approved' ? 'bg-success' : ($order->payment_status == 'Rejected' ? 'bg-danger' : 'bg-secondary') }}">{{ $order->payment_status }}</span>
+                    <span class="badge {{ str_starts_with((string)$order->payment_status, 'Approved') ? 'bg-success' : ($order->payment_status == 'Rejected' ? 'bg-danger' : 'bg-secondary') }}">{{ $order->payment_status }}</span>
                 </div>
             </div>
         </div>

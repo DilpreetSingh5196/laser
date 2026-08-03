@@ -48,7 +48,7 @@
                     </td>
                     <td>{{ $order->created_at->format('Y-m-d') }}</td>
                     <td>
-                        <span class="badge bg-{{ $order->status == 'Completed' ? 'success' : ($order->status == 'Pending' ? 'warning' : 'primary') }}">
+                        <span class="badge {{ str_starts_with((string)$order->status, 'Approved') || $order->status == 'Completed' ? 'bg-success' : ($order->status == 'Pending' ? 'bg-warning text-dark' : 'bg-primary') }}">
                             {{ $order->status }}
                         </span>
                     </td>
@@ -69,7 +69,7 @@
         <div class="card mb-3 shadow-sm border-0">
             <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
                 <span>Order #{{ $order->id }}</span>
-                <span class="badge bg-{{ $order->status == 'Completed' ? 'success' : ($order->status == 'Pending' ? 'warning' : 'primary') }}">
+                <span class="badge {{ str_starts_with((string)$order->status, 'Approved') || $order->status == 'Completed' ? 'bg-success' : ($order->status == 'Pending' ? 'bg-warning text-dark' : 'bg-primary') }}">
                     {{ $order->status }}
                 </span>
             </div>

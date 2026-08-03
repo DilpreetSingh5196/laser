@@ -65,8 +65,8 @@
             <tr>
                 <th style="padding: 10px 15px; border-bottom: 1px solid #e2e8f0; color: #64748b; background-color: #f1f5f9; text-align: left;">Order Status</th>
                 <td style="padding: 10px 15px; border-bottom: 1px solid #e2e8f0;">
-                    @if($order->status == 'Approved')
-                        <span style="display: inline-block; padding: 4px 12px; border-radius: 4px; font-size: 12px; font-weight: bold; background-color: #d1fae5; color: #065f46; border: 1px solid #34d399;">Approved</span>
+                    @if(str_starts_with((string)$order->status, 'Approved'))
+                        <span style="display: inline-block; padding: 4px 12px; border-radius: 4px; font-size: 12px; font-weight: bold; background-color: #d1fae5; color: #065f46; border: 1px solid #34d399;">{{ $order->status }}</span>
                     @else
                         <span style="display: inline-block; padding: 4px 12px; border-radius: 4px; font-size: 12px; font-weight: bold; background-color: #e0f2fe; color: #0369a1; border: 1px solid #38bdf8;">{{ $order->status }}</span>
                     @endif
@@ -75,8 +75,8 @@
             <tr>
                 <th style="padding: 10px 15px; color: #64748b; background-color: #f1f5f9; text-align: left;">Payment Status</th>
                 <td style="padding: 10px 15px;">
-                    @if($order->payment_status == 'Approved')
-                        <span style="display: inline-block; padding: 4px 12px; border-radius: 4px; font-size: 12px; font-weight: bold; background-color: #d1fae5; color: #065f46; border: 1px solid #34d399;">Approved</span>
+                    @if(str_starts_with((string)$order->payment_status, 'Approved'))
+                        <span style="display: inline-block; padding: 4px 12px; border-radius: 4px; font-size: 12px; font-weight: bold; background-color: #d1fae5; color: #065f46; border: 1px solid #34d399;">{{ $order->payment_status }}</span>
                     @elseif($order->payment_status == 'Rejected')
                         <span style="display: inline-block; padding: 4px 12px; border-radius: 4px; font-size: 12px; font-weight: bold; background-color: #fef2f2; color: #991b1b; border: 1px solid #f87171;">Rejected</span>
                     @else

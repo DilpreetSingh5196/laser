@@ -78,12 +78,64 @@
                 // If we already loaded data, skip (unless they trigger pagination)
                 if (contentDiv.innerHTML.trim() !== '') return;
                 
-                loadOrders(year, month, 10, 1, contentDiv, loadingDiv);
+                loadOrders(year, month, 10, 1, '', contentDiv, loadingDiv);
             });
         });
         
-        // Handle pagination clicks and limit changes dynamically using Event Delegation
+        let searchTimeout;
+        document.body.addEventListener('input', function(e) {
+            if (e.target.classList.contains('search-input')) {
+                clearTimeout(searchTimeout);
+                const input = e.target;
+                const year = input.getAttribute('data-year');
+                const month = input.getAttribute('data-month');
+                const search = input.value;
+                const container = input.closest('.orders-container');
+                const limit = container.querySelector('.limit-select') ? container.querySelector('.limit-select').value : 10;
+                const contentDiv = container.querySelector('.orders-content');
+                const loadingDiv = container.querySelector('.loading-indicator');
+                
+                searchTimeout = setTimeout(() => {
+                    loadOrders(year, month, limit, 1, search, contentDiv, loadingDiv, true);
+                }, 400);
+            }
+        });
+
+        document.body.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && e.target.classList.contains('search-input')) {
+                e.preventDefault();
+                clearTimeout(searchTimeout);
+                const input = e.target;
+                const year = input.getAttribute('data-year');
+                const month = input.getAttribute('data-month');
+                const search = input.value;
+                const container = input.closest('.orders-container');
+                const limit = container.querySelector('.limit-select') ? container.querySelector('.limit-select').value : 10;
+                const contentDiv = container.querySelector('.orders-content');
+                const loadingDiv = container.querySelector('.loading-indicator');
+                
+                loadOrders(year, month, limit, 1, search, contentDiv, loadingDiv, true);
+            }
+        });
+        
+        // Handle pagination clicks, search button, and limit changes dynamically using Event Delegation
         document.body.addEventListener('click', function(e) {
+            if (e.target.closest('.search-btn')) {
+                e.preventDefault();
+                clearTimeout(searchTimeout);
+                const btn = e.target.closest('.search-btn');
+                const container = btn.closest('.orders-container');
+                const input = container.querySelector('.search-input');
+                const year = input.getAttribute('data-year');
+                const month = input.getAttribute('data-month');
+                const search = input ? input.value : '';
+                const limit = container.querySelector('.limit-select') ? container.querySelector('.limit-select').value : 10;
+                const contentDiv = container.querySelector('.orders-content');
+                const loadingDiv = container.querySelector('.loading-indicator');
+                
+                loadOrders(year, month, limit, 1, search, contentDiv, loadingDiv, true);
+            }
+
             // Check if clicking a pagination link
             if (e.target.closest('.pagination a')) {
                 e.preventDefault();
@@ -93,12 +145,13 @@
                 const month = url.searchParams.get('month');
                 const limit = url.searchParams.get('limit') || 10;
                 const page = url.searchParams.get('page') || 1;
+                const search = url.searchParams.get('search') || '';
                 
                 const container = link.closest('.orders-container');
                 const contentDiv = container.querySelector('.orders-content');
                 const loadingDiv = container.querySelector('.loading-indicator');
                 
-                loadOrders(year, month, limit, page, contentDiv, loadingDiv);
+                loadOrders(year, month, limit, page, search, contentDiv, loadingDiv);
             }
         });
         
@@ -110,23 +163,36 @@
                 const month = select.getAttribute('data-month');
                 
                 const container = select.closest('.orders-container');
+                const searchInput = container.querySelector('.search-input');
+                const search = searchInput ? searchInput.value : '';
                 const contentDiv = container.querySelector('.orders-content');
                 const loadingDiv = container.querySelector('.loading-indicator');
                 
-                loadOrders(year, month, limit, 1, contentDiv, loadingDiv);
+                loadOrders(year, month, limit, 1, search, contentDiv, loadingDiv);
             }
         });
         
-        function loadOrders(year, month, limit, page, contentDiv, loadingDiv) {
-            loadingDiv.style.display = 'block';
-            contentDiv.style.display = 'none';
+        function loadOrders(year, month, limit, page, search, contentDiv, loadingDiv, keepFocus = false) {
+            if (!keepFocus) {
+                loadingDiv.style.display = 'block';
+                contentDiv.style.display = 'none';
+            }
             
-            fetch(`/admin/reports/orders?year=${year}&month=${month}&limit=${limit}&page=${page}`)
+            fetch(`/admin/reports/orders?year=${year}&month=${month}&limit=${limit}&page=${page}&search=${encodeURIComponent(search || '')}`)
                 .then(response => response.text())
                 .then(html => {
                     contentDiv.innerHTML = html;
                     loadingDiv.style.display = 'none';
                     contentDiv.style.display = 'block';
+                    if (keepFocus) {
+                        const newSearchInput = contentDiv.querySelector('.search-input');
+                        if (newSearchInput) {
+                            newSearchInput.focus();
+                            const val = newSearchInput.value;
+                            newSearchInput.value = '';
+                            newSearchInput.value = val;
+                        }
+                    }
                 })
                 .catch(err => {
                     console.error('Error fetching orders:', err);

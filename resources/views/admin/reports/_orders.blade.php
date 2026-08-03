@@ -1,6 +1,15 @@
-<div class="d-flex justify-content-between align-items-center mb-3">
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
     <div>
         <strong>Total Orders:</strong> {{ $orders->total() }}
+    </div>
+    <div class="flex-grow-1 mx-md-3 my-1" style="max-width: 350px; min-width: 200px;">
+        <div class="input-group input-group-sm">
+            <input type="text" class="form-control search-input" placeholder="Search by client name or number..." data-year="{{ $year }}" data-month="{{ $month }}" value="{{ $search ?? '' }}">
+            <button class="btn btn-outline-secondary search-btn" type="button"><i class="bi bi-search"></i></button>
+            @if(!empty($search))
+                <button class="btn btn-outline-danger clear-btn" type="button" onclick="const inp = this.parentElement.querySelector('.search-input'); inp.value=''; inp.dispatchEvent(new Event('input', {bubbles: true}));"><i class="bi bi-x-lg"></i></button>
+            @endif
+        </div>
     </div>
     <div class="d-flex align-items-center">
         <label class="me-2 fw-bold text-muted small">Show:</label>

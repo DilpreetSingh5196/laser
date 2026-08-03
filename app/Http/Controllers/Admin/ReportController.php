@@ -32,20 +32,30 @@ class ReportController extends Controller
         $year = $request->query('year');
         $month = $request->query('month');
         $limit = $request->query('limit', 10); // default limit 10
+        $search = $request->query('search');
 
         if (!$year || !$month) {
             return response()->json(['error' => 'Year and month are required.'], 400);
         }
 
-        $orders = Order::with('client')
+        $query = Order::with('client')
             ->whereYear('created_at', $year)
-            ->whereMonth('created_at', $month)
-            ->orderByDesc('created_at')
+            ->whereMonth('created_at', $month);
+
+        if (!empty($search)) {
+            $query->whereHas('client', function ($q) use ($search) {
+                $q->where('firm_name', 'like', "%{$search}%")
+                  ->orWhere('client_name', 'like', "%{$search}%")
+                  ->orWhere('mobile_number', 'like', "%{$search}%");
+            });
+        }
+
+        $orders = $query->orderByDesc('created_at')
             ->paginate($limit);
 
         // Append query parameters to pagination links
         $orders->appends($request->query());
 
-        return view('admin.reports._orders', compact('orders', 'year', 'month', 'limit'))->render();
+        return view('admin.reports._orders', compact('orders', 'year', 'month', 'limit', 'search'))->render();
     }
 }

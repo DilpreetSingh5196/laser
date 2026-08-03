@@ -9,6 +9,7 @@ class OrderItem extends Model
     protected $fillable = [
         'order_id',
         'item_image',
+        'design_file',
         'quantity',
         'length_inch',
         'length_cm',

@@ -69,7 +69,10 @@ class OrderController extends Controller
     {
         foreach ($order->items as $item) {
             if ($item->item_image && file_exists(public_path($item->item_image))) {
-                unlink(public_path($item->item_image));
+                @unlink(public_path($item->item_image));
+            }
+            if ($item->design_file && file_exists(public_path($item->design_file))) {
+                @unlink(public_path($item->design_file));
             }
         }
         $order->delete();

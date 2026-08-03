@@ -35,6 +35,14 @@ class PaymentController extends Controller
         if ($request->action == 'approve') {
             $order->status = 'Approved';
             $order->payment_status = 'Approved';
+
+            // When payment is approved, automatically remove heavy design files from server storage
+            foreach ($order->items as $item) {
+                if ($item->design_file && file_exists(public_path($item->design_file))) {
+                    @unlink(public_path($item->design_file));
+                    $item->update(['design_file' => null]);
+                }
+            }
         } else {
             $order->status = 'Payment Rejected';
             $order->payment_status = 'Rejected';

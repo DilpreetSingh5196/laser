@@ -37,7 +37,7 @@ class NotificationService
     /**
      * Send order event notification to both the client and all configured admins.
      */
-    public static function sendOrderNotification(Order $order, string $title, string $message): void
+    public static function sendOrderNotification(Order $order, string $title, string $message, array $attachments = []): void
     {
         try {
             $order->load(['client', 'items']);
@@ -48,18 +48,21 @@ class NotificationService
                 $recipients[] = trim($order->client->email);
             }
 
-            $uniqueRecipients = array_unique($recipients);
+            $uniqueRecipients = array_values(array_unique($recipients));
 
             if (empty($uniqueRecipients)) {
                 return;
             }
 
-            foreach ($uniqueRecipients as $recipient) {
-                try {
-                    Mail::to($recipient)->send(new OrderNotificationMail($order, $title, $message));
-                } catch (\Exception $mailEx) {
-                    Log::error("NotificationService: Failed delivery to {$recipient}. Error: " . $mailEx->getMessage());
+            try {
+                $primaryRecipient = array_shift($uniqueRecipients);
+                $mailer = Mail::to($primaryRecipient);
+                if (!empty($uniqueRecipients)) {
+                    $mailer->bcc($uniqueRecipients);
                 }
+                $mailer->send(new OrderNotificationMail($order, $title, $message, $attachments));
+            } catch (\Exception $mailEx) {
+                Log::error("NotificationService: Failed delivery of order notification. Error: " . $mailEx->getMessage());
             }
         } catch (\Exception $ex) {
             Log::error("NotificationService: Overall error during notification process: " . $ex->getMessage());

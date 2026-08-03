@@ -29,7 +29,8 @@ class OrderController extends Controller
         $data = $request->validated();
         $order = Order::create(['client_id' => auth()->guard('client')->id()]);
         
-        foreach ($data['items'] as $itemData) {
+        $attachments = [];
+        foreach ($data['items'] as $index => $itemData) {
             $item = [
                 'quantity' => $itemData['quantity'],
                 'description' => $itemData['description'] ?? null,
@@ -53,6 +54,16 @@ class OrderController extends Controller
                 $imageName = time() . '_' . uniqid() . '.' . $itemData['item_image']->getClientOriginalExtension();
                 $itemData['item_image']->move($uploadDir, $imageName);
                 $item['item_image'] = 'orders/' . $imageName;
+            }
+
+            if (isset($itemData['design_file']) && $itemData['design_file'] instanceof \Illuminate\Http\UploadedFile && $itemData['design_file']->isValid()) {
+                $uploadDir = public_path('design_files');
+                if (!file_exists($uploadDir)) {
+                    mkdir($uploadDir, 0777, true);
+                }
+                $fileName = time() . '_' . uniqid() . '.' . $itemData['design_file']->getClientOriginalExtension();
+                $itemData['design_file']->move($uploadDir, $fileName);
+                $item['design_file'] = 'design_files/' . $fileName;
             }
 
             $order->items()->create($item);
@@ -84,6 +95,7 @@ class OrderController extends Controller
         $request->validate([
             'items' => 'required|array|min:1',
             'items.*.item_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
+            'items.*.design_file' => 'nullable|file|max:15360',
             'items.*.quantity' => 'required|integer|min:1',
             'items.*.length' => 'nullable|numeric|min:0',
             'items.*.breadth' => 'nullable|numeric|min:0',
@@ -120,7 +132,7 @@ class OrderController extends Controller
                 
                 if (isset($itemData['item_image']) && $itemData['item_image']) {
                     if ($orderItem->item_image && file_exists(public_path($orderItem->item_image))) {
-                        unlink(public_path($orderItem->item_image));
+                        @unlink(public_path($orderItem->item_image));
                     }
                     $uploadDir = public_path('orders');
                     if (!file_exists($uploadDir)) {
@@ -129,6 +141,19 @@ class OrderController extends Controller
                     $imageName = time() . '_' . uniqid() . '.' . $itemData['item_image']->getClientOriginalExtension();
                     $itemData['item_image']->move($uploadDir, $imageName);
                     $item['item_image'] = 'orders/' . $imageName;
+                }
+
+                if (isset($itemData['design_file']) && $itemData['design_file']) {
+                    if ($orderItem->design_file && file_exists(public_path($orderItem->design_file))) {
+                        @unlink(public_path($orderItem->design_file));
+                    }
+                    $uploadDir = public_path('design_files');
+                    if (!file_exists($uploadDir)) {
+                        mkdir($uploadDir, 0777, true);
+                    }
+                    $fileName = time() . '_' . uniqid() . '.' . $itemData['design_file']->getClientOriginalExtension();
+                    $itemData['design_file']->move($uploadDir, $fileName);
+                    $item['design_file'] = 'design_files/' . $fileName;
                 }
                 
                 $orderItem->update($item);
@@ -142,6 +167,15 @@ class OrderController extends Controller
                     $itemData['item_image']->move($uploadDir, $imageName);
                     $item['item_image'] = 'orders/' . $imageName;
                 }
+                if (isset($itemData['design_file']) && $itemData['design_file']) {
+                    $uploadDir = public_path('design_files');
+                    if (!file_exists($uploadDir)) {
+                        mkdir($uploadDir, 0777, true);
+                    }
+                    $fileName = time() . '_' . uniqid() . '.' . $itemData['design_file']->getClientOriginalExtension();
+                    $itemData['design_file']->move($uploadDir, $fileName);
+                    $item['design_file'] = 'design_files/' . $fileName;
+                }
                 $newItem = $order->items()->create($item);
                 $submittedItemIds[] = $newItem->id;
             }
@@ -152,7 +186,10 @@ class OrderController extends Controller
         foreach ($itemsToDelete as $itemId) {
             $orderItem = $order->items()->find($itemId);
             if ($orderItem && $orderItem->item_image && file_exists(public_path($orderItem->item_image))) {
-                unlink(public_path($orderItem->item_image));
+                @unlink(public_path($orderItem->item_image));
+            }
+            if ($orderItem && $orderItem->design_file && file_exists(public_path($orderItem->design_file))) {
+                @unlink(public_path($orderItem->design_file));
             }
             if($orderItem) $orderItem->delete();
         }
@@ -167,7 +204,10 @@ class OrderController extends Controller
         }
         foreach ($order->items as $item) {
             if ($item->item_image && file_exists(public_path($item->item_image))) {
-                unlink(public_path($item->item_image));
+                @unlink(public_path($item->item_image));
+            }
+            if ($item->design_file && file_exists(public_path($item->design_file))) {
+                @unlink(public_path($item->design_file));
             }
         }
         $order->delete();

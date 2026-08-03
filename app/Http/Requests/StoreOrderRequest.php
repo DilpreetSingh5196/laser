@@ -25,6 +25,7 @@ class StoreOrderRequest extends FormRequest
         return [
             'items' => 'required|array|min:1',
             'items.*.item_image' => 'required|image|mimes:jpeg,png,jpg,webp|max:5120',
+            'items.*.design_file' => 'nullable|file|max:15360',
             'items.*.quantity' => 'required|integer|min:1',
             'items.*.length' => 'nullable|numeric|min:0',
             'items.*.breadth' => 'nullable|numeric|min:0',

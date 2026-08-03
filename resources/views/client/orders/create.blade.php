@@ -6,7 +6,7 @@
         <h4 class="mb-0"><a href="{{ route('client.orders.index') }}" class="btn btn-sm btn-outline-light me-2"><i class="bi bi-arrow-left"></i> Back</a> Create Order</h4>
     </div>
     <div class="card-body">
-        <form action="{{ route('client.orders.store') }}" method="POST" enctype="multipart/form-data" id="orderForm">
+        <form action="{{ route('client.orders.store') }}" method="POST" enctype="multipart/form-data" id="orderForm" onsubmit="document.getElementById('submitBtn').disabled = true; document.getElementById('submitBtn').innerHTML = '<span class=\'spinner-border spinner-border-sm me-2\' role=\'status\' aria-hidden=\'true\'></span>Uploading & Submitting... Please wait';">
             @csrf
             
             <div id="items-container">
@@ -21,7 +21,7 @@
                 </button>
             </div>
 
-            <button type="submit" class="btn btn-primary">Submit Order</button>
+            <button type="submit" class="btn btn-primary" id="submitBtn"><i class="bi bi-send me-1"></i> Submit Order</button>
             <a href="{{ route('client.orders.index') }}" class="btn btn-secondary">Cancel</a>
         </form>
     </div>
@@ -38,6 +38,11 @@
             <div class="mb-3">
                 <label class="form-label">Item Image <span class="text-danger">*</span></label>
                 <input type="file" name="items[__INDEX__][item_image]" class="form-control" accept="image/*" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Design File / Attachment (Optional)</label>
+                <input type="file" name="items[__INDEX__][design_file]" class="form-control" accept=".cdr,.pdf,.ai,.eps,.svg,.dxf,.zip,.rar,.tar,.png,.jpg,.jpeg">
+                <small class="text-muted d-block mt-1">Upload design file (.cdr, .pdf, .ai, .zip, etc. &mdash; Max 15MB). File is saved securely for order processing and automatically removed from disk once payment is approved.</small>
             </div>
             <div class="mb-3">
                 <label class="form-label">Quantity <span class="text-danger">*</span></label>

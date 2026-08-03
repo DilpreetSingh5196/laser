@@ -34,6 +34,17 @@
                                 @endif
                             </div>
                             <div class="mb-3">
+                                <label class="form-label">Design File / Attachment (Leave empty to keep current)</label>
+                                <input type="file" name="items[{{ $index }}][design_file]" class="form-control" accept=".cdr,.pdf,.ai,.eps,.svg,.dxf,.zip,.rar,.tar,.png,.jpg,.jpeg">
+                                @if($item->design_file)
+                                    <div class="mt-2">
+                                        <a href="{{ asset($item->design_file) }}" target="_blank" class="btn btn-sm btn-outline-info">
+                                            <i class="bi bi-download"></i> Current Design File ({{ strtoupper(pathinfo($item->design_file, PATHINFO_EXTENSION)) }})
+                                        </a>
+                                    </div>
+                                @endif
+                            </div>
+                            <div class="mb-3">
                                 <label class="form-label">Quantity <span class="text-danger">*</span></label>
                                 <input type="number" name="items[{{ $index }}][quantity]" class="form-control" value="{{ $item->quantity }}" min="1" required>
                             </div>
@@ -93,6 +104,10 @@
             <div class="mb-3">
                 <label class="form-label">Item Image <span class="text-danger">*</span></label>
                 <input type="file" name="items[__INDEX__][item_image]" class="form-control" accept="image/*" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Design File / Attachment (Optional)</label>
+                <input type="file" name="items[__INDEX__][design_file]" class="form-control" accept=".cdr,.pdf,.ai,.eps,.svg,.dxf,.zip,.rar,.tar,.png,.jpg,.jpeg">
             </div>
             <div class="mb-3">
                 <label class="form-label">Quantity <span class="text-danger">*</span></label>

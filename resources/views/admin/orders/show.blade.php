@@ -58,6 +58,14 @@
                             </a>
                         </div>
                         @endif
+                        @if($item->design_file)
+                        <div class="mt-3">
+                            <strong>Design Attachment:</strong><br>
+                            <a href="{{ asset($item->design_file) }}" target="_blank" class="btn btn-sm btn-outline-primary mt-2">
+                                <i class="bi bi-download"></i> Download Design File ({{ strtoupper(pathinfo($item->design_file, PATHINFO_EXTENSION)) }})
+                            </a>
+                        </div>
+                        @endif
                         
                         <hr>
                         <div class="mt-3 text-center">

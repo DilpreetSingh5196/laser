@@ -119,6 +119,13 @@
                     </td>
                     <td style="padding: 12px 10px; border: 1px solid #cbd5e1; color: #475569;">
                         {{ !empty($item->description) ? $item->description : 'No description provided.' }}
+                        @if($item->design_file)
+                            <div style="margin-top: 8px;">
+                                <a href="{{ asset($item->design_file) }}" style="display: inline-block; padding: 5px 12px; background-color: #f1f5f9; color: #0284c7 !important; border: 1px solid #0284c7; border-radius: 4px; text-decoration: none; font-size: 12px; font-weight: 600;" target="_blank">
+                                    📥 Download Design File ({{ strtoupper(pathinfo($item->design_file, PATHINFO_EXTENSION)) }})
+                                </a>
+                            </div>
+                        @endif
                     </td>
                     <td style="padding: 12px 10px; border: 1px solid #cbd5e1; text-align: right; font-weight: 600; color: #0f172a;">
                         @if($item->price)
@@ -146,6 +153,13 @@
         <div style="background-color: #fffbeb; border-left: 4px solid #f59e0b; padding: 12px 16px; margin-bottom: 25px; border-radius: 4px;">
             <strong style="color: #92400e; display: block; margin-bottom: 4px;">Admin Remark / Instruction:</strong>
             <span style="color: #b45309;">{{ $order->admin_remark }}</span>
+        </div>
+        @endif
+
+        @if($order->items && $order->items->whereNotNull('design_file')->count() > 0)
+        <div style="background-color: #eff6ff; border-left: 4px solid #3b82f6; padding: 12px 16px; margin-bottom: 25px; border-radius: 4px; font-size: 14px;">
+            <strong style="color: #1e40af; display: block; margin-bottom: 4px;">📎 Design Files Available for Download:</strong>
+            <span style="color: #1d4ed8;">This order includes design file attachment(s) (CorelDraw, PDF, DXF, ZIP, etc.). You can instantly download them using the links in the items specification table above or directly in the Admin Portal. (Note: These heavy files will be automatically removed from server storage once order payment is approved).</span>
         </div>
         @endif
 

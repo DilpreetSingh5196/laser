@@ -13,7 +13,7 @@
             </div>
         </div>
     </div>
-    <div class="col-md-4 mb-3">
+    <!-- <div class="col-md-4 mb-3">
         <div class="card bg-warning text-dark text-center">
             <div class="card-body">
                 <h3>{{ $pendingOrders }}</h3>
@@ -28,7 +28,7 @@
                 <p class="mb-0">Waiting for Price</p>
             </div>
         </div>
-    </div>
+    </div> -->
     <div class="col-md-4 mb-3">
         <div class="card bg-danger text-white text-center">
             <div class="card-body">

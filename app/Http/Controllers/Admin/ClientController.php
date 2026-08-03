@@ -13,7 +13,7 @@ class ClientController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Client::query();
+        $query = Client::withCount('orders')->withSum('orders', 'price');
         if ($request->has('search')) {
             $query->where('client_name', 'like', '%' . $request->search . '%')
                   ->orWhere('firm_name', 'like', '%' . $request->search . '%')

@@ -28,7 +28,7 @@
 </form>
 
 <div class="table-responsive d-none d-md-block">
-    <table class="table table-bordered table-striped">
+    <table class="table table-bordered table-striped table-hover">
         <thead class="table-dark">
             <tr>
                 <th>ID</th>
@@ -42,7 +42,7 @@
         </thead>
         <tbody>
             @forelse($clients as $client)
-            <tr>
+            <tr class="client-row" style="cursor: pointer;" title="Click to view order statistics" data-firm="{{ $client->firm_name }}" data-name="{{ $client->client_name }}" data-orders="{{ $client->orders_count }}" data-payment="{{ number_format($client->orders_sum_price ?? 0, 2) }}">
                 <td>{{ $client->id }}</td>
                 <td>{{ $client->firm_name }}</td>
                 <td>{{ $client->client_name }}</td>
@@ -75,7 +75,7 @@
 
 <div class="d-block d-md-none">
     @forelse($clients as $client)
-        <div class="card shadow-sm mb-3 border-0">
+        <div class="card shadow-sm mb-3 border-0 client-row" style="cursor: pointer;" title="Click to view order statistics" data-firm="{{ $client->firm_name }}" data-name="{{ $client->client_name }}" data-orders="{{ $client->orders_count }}" data-payment="{{ number_format($client->orders_sum_price ?? 0, 2) }}">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5 class="card-title mb-0">{{ $client->client_name }}</h5>
@@ -115,4 +115,69 @@
         {{ $clients->links('pagination::bootstrap-5') }}
     </div>
 </div>
+
+<!-- Client Summary Modal -->
+<div class="modal fade" id="clientSummaryModal" tabindex="-1" aria-labelledby="clientSummaryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title" id="clientSummaryModalLabel">
+                    <i class="bi bi-info-circle-fill me-2 text-info"></i><span id="modalFirmName"></span> - Client Overview
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="mb-3 text-center">
+                    <h5 class="mb-1 fw-bold text-dark" id="modalClientName"></h5>
+                    <p class="text-muted small mb-0">Order & Payment Statistics</p>
+                </div>
+                <div class="row g-3">
+                    <div class="col-6">
+                        <div class="p-3 bg-light rounded text-center border">
+                            <div class="text-muted small text-uppercase fw-semibold mb-1">Total Orders</div>
+                            <div class="fs-4 fw-bold text-primary" id="modalTotalOrders">0</div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="p-3 bg-light rounded text-center border">
+                            <div class="text-muted small text-uppercase fw-semibold mb-1">Total Payment</div>
+                            <div class="fs-4 fw-bold text-success" id="modalTotalPayment">Rs. 0.00</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-secondary btn-sm px-4" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const clientRows = document.querySelectorAll('.client-row');
+        const modalElement = document.getElementById('clientSummaryModal');
+        const clientModal = new bootstrap.Modal(modalElement);
+
+        clientRows.forEach(row => {
+            row.addEventListener('click', function(e) {
+                if (e.target.closest('a') || e.target.closest('button') || e.target.closest('form')) {
+                    return;
+                }
+
+                const firm = this.getAttribute('data-firm');
+                const name = this.getAttribute('data-name');
+                const orders = this.getAttribute('data-orders');
+                const payment = this.getAttribute('data-payment');
+
+                document.getElementById('modalFirmName').textContent = firm;
+                document.getElementById('modalClientName').textContent = name;
+                document.getElementById('modalTotalOrders').textContent = orders;
+                document.getElementById('modalTotalPayment').textContent = 'Rs. ' + payment;
+
+                clientModal.show();
+            });
+        });
+    });
+</script>
 @endsection

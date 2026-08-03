@@ -48,8 +48,17 @@
         border-right: none;
         color: #888;
     }
+    .input-group-text.toggle-password {
+        border-left: none;
+        border-right-style: solid;
+        border-right-width: 1px;
+        cursor: pointer;
+    }
     .form-control {
         border-left: none;
+    }
+    .form-control.password-input {
+        border-right: none;
     }
     .form-control:focus {
         box-shadow: none;
@@ -114,7 +123,10 @@
                 <label for="password" class="form-label">Password</label>
                 <div class="input-group">
                     <span class="input-group-text"><i class="bi bi-lock"></i></span>
-                    <input type="password" name="password" id="password" class="form-control" placeholder="••••••••" required>
+                    <input type="password" name="password" id="password" class="form-control password-input" placeholder="••••••••" required>
+                    <span class="input-group-text toggle-password" id="togglePassword">
+                        <i class="bi bi-eye" id="toggleIcon"></i>
+                    </span>
                 </div>
             </div>
             
@@ -133,4 +145,28 @@
         </form>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const togglePassword = document.getElementById('togglePassword');
+        const password = document.getElementById('password');
+        const toggleIcon = document.getElementById('toggleIcon');
+
+        if (togglePassword && password && toggleIcon) {
+            togglePassword.addEventListener('click', function() {
+                const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+                password.setAttribute('type', type);
+                
+                if (type === 'password') {
+                    toggleIcon.classList.remove('bi-eye-slash');
+                    toggleIcon.classList.add('bi-eye');
+                } else {
+                    toggleIcon.classList.remove('bi-eye');
+                    toggleIcon.classList.add('bi-eye-slash');
+                }
+                password.focus();
+            });
+        }
+    });
+</script>
 @endsection

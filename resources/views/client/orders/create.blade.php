@@ -15,14 +15,19 @@
             
             @error('items')<div class="text-danger mb-3">{{ $message }}</div>@enderror
 
-            <div class="mb-4">
-                <button type="button" class="btn btn-outline-primary" id="add-item-btn">
-                    <i class="bi bi-plus-circle"></i> Add Another Item
+            <div class="my-4 p-3 bg-light border border-2 border-dashed rounded text-center">
+                <p class="text-muted mb-2 small">Need to order multiple different designs in this single submission?</p>
+                <button type="button" class="btn btn-sm btn-outline-success px-4 font-weight-bold" id="add-item-btn">
+                    <i class="bi bi-plus-circle me-1"></i> + Add Another Item (Optional)
                 </button>
             </div>
 
-            <button type="submit" class="btn btn-primary" id="submitBtn"><i class="bi bi-send me-1"></i> Submit Order</button>
-            <a href="{{ route('client.orders.index') }}" class="btn btn-secondary">Cancel</a>
+            <hr class="my-4">
+
+            <div class="d-flex gap-2 justify-content-end">
+                <a href="{{ route('client.orders.index') }}" class="btn btn-outline-secondary px-4">Cancel</a>
+                <button type="submit" class="btn btn-primary px-4 font-weight-bold" id="submitBtn"><i class="bi bi-send me-2"></i> Submit Order</button>
+            </div>
         </form>
     </div>
 </div>

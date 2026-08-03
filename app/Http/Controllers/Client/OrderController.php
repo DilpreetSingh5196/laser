@@ -31,6 +31,11 @@ class OrderController extends Controller
         
         $attachments = [];
         foreach ($data['items'] as $index => $itemData) {
+            // Safety guard: prevent creating accidental empty item entries if submitted without image or dimensions
+            if (empty($itemData['item_image']) && empty($itemData['description']) && empty($itemData['length']) && empty($itemData['breadth']) && empty($itemData['design_file'])) {
+                continue;
+            }
+
             $item = [
                 'quantity' => $itemData['quantity'],
                 'description' => $itemData['description'] ?? null,
